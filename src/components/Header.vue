@@ -28,8 +28,8 @@
 				</li>
 				<li class="nav-item">
 					<form class="search-box">
-						<input class="form-control" type="search" placeholder="Search" aria-label="Search">
-						<button class="btn btn-outline-success p-0" type="submit">SS</button>
+						<input class="form-control" type="search" placeholder="Tìm kiếm..." aria-label="Search">
+						<button class="btn btn-outline-success p-0" type="submit">Search</button>
 					</form>
 				</li>
 			</ul>
@@ -52,8 +52,9 @@ export default class Header extends Vue {}
 
 		.search-box {
 			display: grid;
-			grid-template-columns: 80% 20%;
+			grid-template-columns: 1fr 27%;
 			grid-column-gap: 5px;
+			width: 300px;
 		}
 	}
 </style>

@@ -19,6 +19,6 @@ export default class MainLayout extends Vue {}
 
 <style>
 .offset {
-    padding-top: 70px;
+    padding-top: 90px;
   }
 </style>
