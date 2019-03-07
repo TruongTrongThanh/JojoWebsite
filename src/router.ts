@@ -27,6 +27,11 @@ export default new Router({
           name: 'manga-view',
           component: () => import('./views/manga/View.vue'),
         },
+        {
+          path: 'manga/:id',
+          name: 'manga-info',
+          component: () => import('./views/manga/Info.vue'),
+        },
       ],
     },
   ],

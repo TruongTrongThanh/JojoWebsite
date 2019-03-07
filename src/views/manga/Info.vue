@@ -1,7 +1,7 @@
 <template>
   <div class="manga-info">
     <div class="info">
-
+      
     </div>
   </div>
 </template>
