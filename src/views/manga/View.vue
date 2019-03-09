@@ -54,13 +54,6 @@ export default class MangaView extends Vue {
     grid-gap: 30px;
     $bg-color: rgba(0, 0, 0, 0.53);
 
-    a {
-      color: rgb(204, 204, 204);
-      &:hover {
-        color: white;
-      }
-    }
-
     .araki-quotes {
       background-color: $bg-color;
       height: 500px;

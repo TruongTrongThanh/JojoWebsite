@@ -1,12 +1,12 @@
 <template>
   <div 
     :class="{ 'expand': isExpand }" 
-    class="manga-bar" 
+    class="manga-bar"
     @click="isExpand = !isExpand"
   >
     <img class="w-100" :src="manga.cardImgSrc" :alt="manga.name">
     <div class="text">
-      <span class="title">{{ manga.name }}</span>
+      <router-link :to="'/manga/' + manga.id"><span class="title">{{ manga.name }}</span></router-link>
       <div v-show="isExpand" class="expand-text rounded">
         Số chương: 100 <br/>
         Đã dịch: 50 <br/>
@@ -14,8 +14,6 @@
       </div>
     </div>
     <img class="background w-100 position-absolute" :src="manga.backImgSrc">
-    <div class="color-overlay w-100 position-absolute"/>
-    <!-- <div :class="{ 'expand': isExpand }"  class="second-line w-100 position-absolute"/> -->
   </div>
 </template>
 
@@ -42,8 +40,15 @@ export default class MangaBar extends Vue {
   .manga-bar {
     width: 722px;
     height: $bar-height;
-    //outline: 3px solid $outline-color;
     position: relative;
+
+    a {
+      color: rgb(204, 204, 204);
+      &:hover {
+        color: white;
+        text-decoration: none;
+      }
+    }
 
     .second-line {
       height: 100%;
@@ -58,6 +63,7 @@ export default class MangaBar extends Vue {
 
     .background, .color-overlay {
       left: 0;
+      filter: brightness(.4);
       z-index: -1;
     }
     .color-overlay {
