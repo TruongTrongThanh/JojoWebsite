@@ -23,19 +23,17 @@ import Manga from '@/models/manga.ts';
 
 @Component
 export default class MangaBar extends Vue {
-  @Prop()  readonly manga!: Manga;
+  @Prop() readonly manga!: Manga;
 
   isExpand: boolean = false;
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
   @import url('https://fonts.googleapis.com/css?family=Abril+Fatface');
   //font-family: 'Abril Fatface', cursive;
   $bar-height: 100px;
   $expand-bar-height: 400px;
-
-  $outline-color: rgba(197, 197, 197, 0.788);
 
   .manga-bar {
     width: 722px;
@@ -50,27 +48,10 @@ export default class MangaBar extends Vue {
       }
     }
 
-    .second-line {
-      height: 100%;
-      top: 0;
-      border: 2px solid $outline-color;
-      transform: scale(0.97, 0.85);
-
-      &.expand {
-        transform: scale(0.97, 0.95);
-      }
-    }
-
-    .background, .color-overlay {
+    .background {
       left: 0;
       filter: brightness(.4);
       z-index: -1;
-    }
-    .color-overlay {
-      background-color: black;
-      opacity: .5;
-      height: 100%;
-      top: 0;
     }
 
     img {

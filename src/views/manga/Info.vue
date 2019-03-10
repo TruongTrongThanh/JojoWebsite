@@ -33,10 +33,14 @@
               :class="i % 2 == 0 ? 'dark' : 'darken'" 
               class="text-left list-group-item"
             >
-              <img class="icon" :src="require('@/assets/no-image-icon.png')">
-              <span class="ml-3 chapter-title">Chapter 00{{ i }} - A long long chapter title</span>
-              <span class="">52 likes</span>
-              <span class="text-right">2018-08-02</span>
+              <div>
+                <img class="icon" :src="require('@/assets/no-image-icon.png')">
+                <span class="ml-3 chapter-title">{{ chapter | chapterNameRender }}</span>
+              </div>
+              <div>
+                <span class="mr-4">52 likes</span>
+                <span class="ml-5 text-right">2018-08-02</span>
+              </div>
             </li>
           </ul>
         </div>
@@ -45,11 +49,24 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import Manga from '@/models/Manga.ts';
 
-@Component
-export default class MangaInfo extends Vue {}
+@Component({
+  filters: {
+    chapterNameRender(chapter: any) {
+      const name = 'Chapter 001 - ' + chapter.name;
+      if (name.length < 40) return name;
+      else return name.substring(0, 40).replace(/...$/, '...');
+    }
+  }
+})
+export default class MangaInfo extends Vue {
+  chapter: any = {
+    name: 'a long long long long long long long title'
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -87,48 +104,49 @@ export default class MangaInfo extends Vue {}
   }
 
   .details {
-      height: 500px;
-      position: relative;
-      bottom: 10px;
+    height: 500px;
+    position: relative;
+    bottom: 10px;
 
-      .info, .chapter {
-        background-color: rgba(0, 0, 0, .7);
-        width: 200px;
-        height: 500px;
-        font-size: 17px;
+    .info, .chapter {
+      background-color: rgba(0, 0, 0, .7);
+      width: 200px;
+      height: 500px;
+      font-size: 17px;
+    }
+
+    .bar-title {
+        background-color: rgba(255, 37, 200, .7);
+        font-family: 'Francois One', sans-serif;
       }
 
-      .bar-title {
-          background-color: rgba(255, 37, 200, .7);
-          font-family: 'Francois One', sans-serif;
+    .chapter {
+      .search {
+        height: 28px;
+      }
+      .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .icon {
+          max-width: 60px;
+        }
+        .chapter-title {
+          justify-self: start;
+          width: 360px;
+          overflow:hidden; 
+          white-space:nowrap; 
+          text-overflow: ellipsis;
         }
 
-      .chapter {
-        .search {
-          height: 28px;
+        &.dark {
+          background-color: rgba(0, 0, 0, .6);
         }
-        .list-group-item {
-
-          display: grid;
-          grid-template-columns: 10% 1fr 20% 15%;
-          justify-items: center;
-          align-items: center;
-
-          .icon {
-            //max-width: 60px;
-            width: 100%;
-          }
-          .chapter-title {
-            justify-self: start;
-          }
-
-          &.dark {
-            background-color: rgba(0, 0, 0, .6);
-          }
-          &.darken {
-            background-color: rgba(26, 26, 26, .6);
-          }
+        &.darken {
+          background-color: rgba(26, 26, 26, .6);
         }
       }
     }
+  }
 </style>

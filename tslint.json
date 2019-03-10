@@ -10,6 +10,7 @@
   },
   "rules": {
     "quotemark": [true, "single"],
+    "curly": [true, "ignore-same-line"],
     "indent": [true, "spaces", 2],
     "interface-name": false,
     "ordered-imports": false,
