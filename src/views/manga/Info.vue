@@ -27,22 +27,7 @@
             <span class="mr-3">Tìm kiếm</span>
             <input class="search form-control" type="text">
           </div>
-          <ul class="list-group">
-            <li 
-              v-for="i in 50" :key="i" 
-              :class="i % 2 == 0 ? 'dark' : 'darken'" 
-              class="text-left list-group-item"
-            >
-              <div>
-                <img class="icon" :src="require('@/assets/no-image-icon.png')">
-                <span class="ml-3 chapter-title">{{ chapter | chapterNameRender }}</span>
-              </div>
-              <div>
-                <span class="mr-4">52 likes</span>
-                <span class="ml-5 text-right">2018-08-02</span>
-              </div>
-            </li>
-          </ul>
+          <volume-list-viewer/>
         </div>
       </div>
     </div>
@@ -51,9 +36,13 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import VolumeListViewer from '@/components/VolumeListViewer.vue';
 import Manga from '@/models/Manga.ts';
 
 @Component({
+  components: {
+    VolumeListViewer,
+  },
   filters: {
     chapterNameRender(chapter: any) {
       const name = 'Chapter 001 - ' + chapter.name;
@@ -104,14 +93,12 @@ export default class MangaInfo extends Vue {
   }
 
   .details {
-    height: 500px;
     position: relative;
     bottom: 10px;
 
     .info, .chapter {
       background-color: rgba(0, 0, 0, .7);
       width: 200px;
-      height: 500px;
       font-size: 17px;
     }
 
@@ -123,29 +110,6 @@ export default class MangaInfo extends Vue {
     .chapter {
       .search {
         height: 28px;
-      }
-      .list-group-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .icon {
-          max-width: 60px;
-        }
-        .chapter-title {
-          justify-self: start;
-          width: 360px;
-          overflow:hidden; 
-          white-space:nowrap; 
-          text-overflow: ellipsis;
-        }
-
-        &.dark {
-          background-color: rgba(0, 0, 0, .6);
-        }
-        &.darken {
-          background-color: rgba(26, 26, 26, .6);
-        }
       }
     }
   }

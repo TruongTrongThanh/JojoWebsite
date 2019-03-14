@@ -11,5 +11,9 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: white;
+
+    .clickable {
+      cursor: pointer;
+    }
 }
 </style>
