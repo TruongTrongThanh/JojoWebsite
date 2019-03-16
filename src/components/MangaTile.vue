@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { Vue, Prop, Component } from 'vue-property-decorator';
-import Manga from '@/models/manga.ts';
+import { Manga } from '@/models/manga.ts';
 
 @Component
 export default class MangaTile extends Vue {

@@ -17,7 +17,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import MangaTile from '@/components/MangaTile.vue';
 import MangaBar from '@/components/MangaBar.vue';
-import Manga from '@/models/manga.ts';
+import { Manga } from '@/models/manga.ts';
 
 @Component({
   components: {

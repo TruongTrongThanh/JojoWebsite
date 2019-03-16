@@ -17,8 +17,11 @@ import MainHeader from '@/components/Header.vue';
 export default class MainLayout extends Vue {}
 </script>
 
-<style>
-.offset {
-    padding-top: 90px;
+<style lang="scss">
+  .offset {
+    padding-top: 265px;
+    @media (min-width: 992px) {
+      padding-top: 90px;
+    }
   }
 </style>

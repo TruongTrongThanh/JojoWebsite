@@ -1,42 +1,77 @@
 <template>
   <div class="manga-info">
-    <div class="banner">
+    <div class="banner d-none d-lg-block">
     </div>
     <div class="content container">
-      <div class="mb-5 peak row">
-        <div class="text-left col-9">
-          <h2 class="font-weight-bold title">DIAMOND IS UNBREAKABLE</h2>
-          <h4 class="sub-title">Part IV</h4>
+      <div class="mb-2 peak row">
+        <div class="text-left w-75">
+          <h2 class="font-weight-bold d-none d-lg-block title">DIAMOND IS UNBREAKABLE</h2>
         </div>
-        <div class="text-right font-italic align-self-end author col"><h3>Araki Hirohiko</h3></div>
       </div>
-      <div class="mx-4 no-gutters details row">
-        <div class="text-left mr-4 info col-4">
+      <div class="mb-4 d-none d-lg-flex row">
+        <h4 class="text-left sub-title col">Part IV</h4>
+        <h3 class="text-right font-italic align-self-end author col">Araki Hirohiko</h3>
+      </div>
+      <div class="mx-lg-4 no-gutters details row">
+        <div 
+          :class="{ 'sticky-top sticky-top-offset': isMobile() ? false : true }" 
+          class="text-left mb-3 mb-lg-0 mr-lg-4 info align-self-start col-12 col-lg-4">
           <h4 class="m-0 p-2 text-center bar-title">Thông tin truyện</h4>
-          <div class="p-3 bar-content">
-            Số chương: 100 <br/>
-            Đã dịch: 50 <br/>
-            Năm: 1990 - 2000 <br/>
-            Thể loại: Thriller <br/>
-            Nội dung: In 1999, the Arrow, manifesting latent Stand abilities, travels throughout Morioh, Japan; as high schooler Josuke Higashikata (illegitimate son of Joseph) and his friends seek out the culprits of a series of homicides. 
+          <div class="py-3 px-4 bar-content">
+            <div class="text-left">
+              <div class="py-2 info-item no-gutters row">
+                <span class="col">Số chương:</span>
+                <span class="text-left col">100</span>
+              </div>
+              <div class="py-2 info-item no-gutters row">
+                <span class="col">Đã dịch:</span>
+                <span class="text-left col">50</span>
+              </div>
+              <div class="py-2 info-item no-gutters row">
+                <span class="col">Năm:</span>
+                <span class="text-left col">1990 - 2000</span>
+              </div>
+              <div class="py-2 info-item no-gutters row">
+                <span class="col">Thể loại:</span>
+                <div class="text-left text-danger col">
+                  <span 
+                    v-for="(genre, index) in genreList" 
+                    :key="genre" 
+                    :style="`color: ${genre.color}`">
+                    {{ index == 0 ? genre.name : '&nbsp;' + genre.name }}
+                  </span>
+                </div>
+              </div>
+              <div class="py-2">In 1999, the Arrow, manifesting latent Stand abilities, travels throughout Morioh, Japan; as high schooler Josuke Higashikata (illegitimate son of Joseph) and his friends seek out the culprits of a series of homicides.</div>
+            </div>
+            <div class="text-center buttons">
+              <button class="my-3 px-4 py-2 btn btn-success rounded-pill">Đọc chương đầu (001)</button>
+            </div>
           </div>
         </div>
-        <div class="chapter col">
+        <div class="chapter col-12 col-lg">
           <h4 class="m-0 p-2 text-center bar-title">Danh sách chương</h4>
-          <div class="pr-3 py-3 justify-content-end form-inline">
-            <span class="mr-3">Tìm kiếm</span>
-            <input class="search form-control" type="text">
+          <div class="pr-3 py-3 align-items-center no-gutters row">
+            <span class="mr-3 text-right col col-lg">Tìm kiếm</span>
+            <input class="px-2 search form-control col-8 col-lg-4" type="text">
           </div>
-          <ul class="list-group">
+          <ul class="list container">
             <li 
-              v-for="i in 50" :key="i" 
-              :class="i % 2 == 0 ? 'dark' : 'darken'" 
-              class="text-left list-group-item"
+              v-for="(chapter, index) in chapterList" :key="chapter.id" 
+              :class="index % 2 == 0 ? 'dark' : 'darken'" 
+              class="py-3 align-items-center item row"
             >
-              <img class="icon" :src="require('@/assets/no-image-icon.png')">
-              <span class="ml-3 chapter-title">Chapter 00{{ i }} - A long long chapter title</span>
-              <span class="">52 likes</span>
-              <span class="text-right">2018-08-02</span>
+              <div class="col-8 col-lg-9">
+                <div class="no-gutters align-items-center mr-3 mr-lg-0 row">
+                  <img class="mr-2 mr-lg-3 col-4 icon col-lg-2" :src="chapter.cardSrc || require('@/assets/no-image-icon.png')">
+                  <div class="text-left text-truncate chapter-title col">
+                    {{ 'Chapter 00' + chapter.index }}{{ isMobile() ? '' : ' - ' + chapter.name }}
+                  </div>
+                </div>
+              </div>
+              <div class="text-right col col-lg-3">
+                <span class="mr-lg-2">{{ chapter.createdAt.toLocaleDateString("en-US") }}</span>
+              </div>
             </li>
           </ul>
         </div>
@@ -45,11 +80,90 @@
   </div>
 </template>
 
-<script>
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script lang="ts">
+import { Component, Prop, Mixins, Vue } from 'vue-property-decorator';
+import { Genre, Chapter } from '@/models/manga.ts';
+import mixin from '@/mixin';
 
 @Component
-export default class MangaInfo extends Vue {}
+export default class MangaInfo extends Mixins(mixin) {
+  genreList: Genre[] = [
+    {
+      name: 'thriller',
+      color: '#d74343'
+    },
+    {
+      name: 'slice of life',
+      color: 'green'
+    },
+    {
+      name: 'fantasy',
+      color: 'purple'
+    },
+  ]
+
+  chapterList: Chapter[] = [
+    {
+      id: 'abcxyz',
+      index: 1,
+      name: 'a long long long long long long long long title',
+      createdAt: new Date(),
+    },
+    {
+      id: 'abcxyz',
+      index: 2,
+      name: 'a long long long long long long long long title',
+      createdAt: new Date(),
+    },
+    {
+      id: 'abcxyz',
+      index: 3,
+      name: 'a long long long long long long long long title',
+      createdAt: new Date(),
+    },
+    {
+      id: 'abcxyz',
+      index: 4,
+      name: 'a long long long long long long long long title',
+      createdAt: new Date(),
+    },
+    {
+      id: 'abcxyz',
+      index: 5,
+      name: 'a long long long long long long long long title',
+      createdAt: new Date(),
+    },
+    {
+      id: 'abcxyz',
+      index: 6,
+      name: 'a long long long long long long long long title',
+      createdAt: new Date(),
+    },
+    {
+      id: 'abcxyz',
+      index: 7,
+      name: 'a long long long long long long long long title',
+      createdAt: new Date(),
+    },
+    {
+      id: 'abcxyz',
+      index: 8,
+      name: 'a long long long long long long long long title',
+      createdAt: new Date(),
+    },
+    {
+      id: 'abcxyz',
+      index: 9,
+      name: 'a long long long long long long long long title',
+      createdAt: new Date(),
+    },
+  ]
+
+  chapterNameRender(chapter: any): string {
+
+    return 'abc';
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -87,39 +201,37 @@ export default class MangaInfo extends Vue {}
   }
 
   .details {
-      height: 500px;
       position: relative;
       bottom: 10px;
 
       .info, .chapter {
         background-color: rgba(0, 0, 0, .7);
         width: 200px;
-        height: 500px;
         font-size: 17px;
       }
 
       .bar-title {
-          background-color: rgba(255, 37, 200, .7);
-          font-family: 'Francois One', sans-serif;
+        background-color: rgba(255, 37, 200, .7);
+        font-family: 'Francois One', sans-serif;
+      }
+
+      .sticky-top-offset {
+        top: 100px;
+      }
+
+      .info {
+        .info-item {
+          border-bottom: 1px solid #6f6f6f;
         }
+      }
 
       .chapter {
         .search {
           height: 28px;
         }
-        .list-group-item {
-
-          display: grid;
-          grid-template-columns: 10% 1fr 20% 15%;
-          justify-items: center;
-          align-items: center;
-
+        .item {
           .icon {
-            //max-width: 60px;
-            width: 100%;
-          }
-          .chapter-title {
-            justify-self: start;
+            max-width: 72px;
           }
 
           &.dark {

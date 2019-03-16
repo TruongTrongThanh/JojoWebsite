@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Vue, Prop, Emit, Component } from 'vue-property-decorator';
-import Manga from '@/models/manga.ts';
+import { Manga } from '@/models/manga.ts';
 
 @Component
 export default class MangaBar extends Vue {
