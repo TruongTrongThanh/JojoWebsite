@@ -14,8 +14,9 @@
       </div>
       <div class="mx-lg-4 no-gutters details row">
         <div 
-          :class="{ 'sticky-top sticky-top-offset': isMobile() ? false : true }" 
-          class="text-left mb-3 mb-lg-0 mr-lg-4 info align-self-start col-12 col-lg-4">
+          :class="{ 'sticky-top sticky-top-offset': isMobile ? false : true }" 
+          class="text-left mb-3 mb-lg-0 mr-lg-4 info align-self-start col-12 col-lg-4"
+        >
           <h4 class="m-0 p-2 text-center bar-title">Thông tin truyện</h4>
           <div class="py-3 px-4 bar-content">
             <div class="text-left">
@@ -65,7 +66,7 @@
                 <div class="no-gutters align-items-center mr-3 mr-lg-0 row">
                   <img class="mr-2 mr-lg-3 col-4 icon col-lg-2" :src="chapter.cardSrc || require('@/assets/no-image-icon.png')">
                   <div class="text-left text-truncate chapter-title col">
-                    {{ 'Chapter 00' + chapter.index }}{{ isMobile() ? '' : ' - ' + chapter.name }}
+                    {{ 'Chapter 00' + chapter.index }}{{ isMobile ? '' : ' - ' + chapter.name }}
                   </div>
                 </div>
               </div>
@@ -158,11 +159,6 @@ export default class MangaInfo extends Mixins(mixin) {
       createdAt: new Date(),
     },
   ]
-
-  chapterNameRender(chapter: any): string {
-
-    return 'abc';
-  }
 }
 </script>
 
@@ -231,7 +227,7 @@ export default class MangaInfo extends Mixins(mixin) {
         }
         .item {
           .icon {
-            max-width: 72px;
+            max-width: 65px;
           }
 
           &.dark {

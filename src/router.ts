@@ -9,7 +9,6 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'main-layout',
       component: () => import('./layouts/MainLayout.vue'),
       children: [
         {
@@ -34,5 +33,17 @@ export default new Router({
         },
       ],
     },
+    {
+      path: '/chapter',
+      name: 'reading-layout',
+      component: () => import('./layouts/ReadingLayout.vue'),
+      children: [
+        {
+          path: ':chapterID',
+          name: 'chapter-view',
+          component: () => import('./views/chapter/View.vue'),
+        },
+      ],
+    }
   ],
 });
