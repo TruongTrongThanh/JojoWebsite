@@ -1,6 +1,10 @@
 <template>
   <div class="chapter-view">
-    Chapter {{ $route.params.chapterID }}
+    <ul class="paper-list">
+      <li class="paper-item">
+        
+      </li>
+    </ul>
   </div>
 </template>
 

@@ -82,83 +82,27 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Mixins, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Genre, Chapter } from '@/models/manga.ts';
-import mixin from '@/mixin';
 
 @Component
-export default class MangaInfo extends Mixins(mixin) {
+export default class MangaInfo extends Vue {
   genreList: Genre[] = [
     {
       name: 'thriller',
-      color: '#d74343'
+      color: '#d74343',
     },
     {
       name: 'slice of life',
-      color: 'green'
+      color: 'green',
     },
     {
       name: 'fantasy',
-      color: 'purple'
+      color: 'purple',
     },
-  ]
+  ];
 
-  chapterList: Chapter[] = [
-    {
-      id: 'abcxyz',
-      index: 1,
-      name: 'a long long long long long long long long title',
-      createdAt: new Date(),
-    },
-    {
-      id: 'abcxyz',
-      index: 2,
-      name: 'a long long long long long long long long title',
-      createdAt: new Date(),
-    },
-    {
-      id: 'abcxyz',
-      index: 3,
-      name: 'a long long long long long long long long title',
-      createdAt: new Date(),
-    },
-    {
-      id: 'abcxyz',
-      index: 4,
-      name: 'a long long long long long long long long title',
-      createdAt: new Date(),
-    },
-    {
-      id: 'abcxyz',
-      index: 5,
-      name: 'a long long long long long long long long title',
-      createdAt: new Date(),
-    },
-    {
-      id: 'abcxyz',
-      index: 6,
-      name: 'a long long long long long long long long title',
-      createdAt: new Date(),
-    },
-    {
-      id: 'abcxyz',
-      index: 7,
-      name: 'a long long long long long long long long title',
-      createdAt: new Date(),
-    },
-    {
-      id: 'abcxyz',
-      index: 8,
-      name: 'a long long long long long long long long title',
-      createdAt: new Date(),
-    },
-    {
-      id: 'abcxyz',
-      index: 9,
-      name: 'a long long long long long long long long title',
-      createdAt: new Date(),
-    },
-  ]
+  chapterList: Chapter[] = [];
 }
 </script>
 

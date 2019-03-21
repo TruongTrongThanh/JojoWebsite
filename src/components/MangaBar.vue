@@ -2,9 +2,14 @@
   <div 
     :class="{ 'expand': isExpand }" 
     class="manga-bar"
-    @click="isExpand = !isExpand"
+    @click="shouldExpand($event)"
   >
-    <img class="w-100" :src="manga.cardImgSrc" :alt="manga.name">
+    <img
+      :src="manga.frontBarImgSrc" 
+      :alt="manga.name"
+      class="w-100"
+      @load="finish"
+    >
     <div class="text">
       <router-link :to="'/manga/' + manga.id"><span class="title">{{ manga.name }}</span></router-link>
       <div v-show="isExpand" class="expand-text rounded">
@@ -13,7 +18,11 @@
         Nội dung: {{ manga.desc }}
       </div>
     </div>
-    <img class="background w-100 position-absolute" :src="manga.backImgSrc">
+    <img 
+      :src="manga.backBarImgSrc"
+      class="background w-100 position-absolute" 
+      @load="finish"
+    >
   </div>
 </template>
 
@@ -23,9 +32,24 @@ import { Manga } from '@/models/manga.ts';
 
 @Component
 export default class MangaBar extends Vue {
-  @Prop()  readonly manga!: Manga;
+  @Prop() readonly manga!: Manga;
 
   isExpand: boolean = false;
+  counterLoading: number = 0;
+
+  created() {
+    console.log('manga-bar created');
+  }
+
+  shouldExpand(e: any) {
+    if (e.target.className === 'title') this.isExpand = false;
+    else this.isExpand = !this.isExpand;
+  }
+
+  finish() {
+    this.counterLoading++;
+    if (this.counterLoading === 2) this.$emit('completed');
+  }
 }
 </script>
 
@@ -49,18 +73,7 @@ export default class MangaBar extends Vue {
         text-decoration: none;
       }
     }
-
-    .second-line {
-      height: 100%;
-      top: 0;
-      border: 2px solid $outline-color;
-      transform: scale(0.97, 0.85);
-
-      &.expand {
-        transform: scale(0.97, 0.95);
-      }
-    }
-
+    
     .background, .color-overlay {
       left: 0;
       filter: brightness(.4);

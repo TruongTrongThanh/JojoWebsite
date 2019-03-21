@@ -1,12 +1,14 @@
 <template>
   <div class="manga-view container">
-    <div class="list-bar">
+    <div v-show="isPageReady" class="list-bar">
       <manga-bar
         v-for="manga in mangaList" 
         :key="manga.id"  
         :manga="manga"
+        @completed="finish"
       />
     </div>
+    <spinner v-show="!isPageReady"/>
     <div class="araki-quotes">
       Araki quotes...
     </div>
@@ -14,36 +16,38 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
+
 import MangaTile from '@/components/MangaTile.vue';
 import MangaBar from '@/components/MangaBar.vue';
+import Spinner from '@/components/Spinner.vue';
+
 import { Manga } from '@/models/manga.ts';
+import * as MangaAPI from '@/apis/manga-api';
 
 @Component({
   components: {
     MangaTile,
     MangaBar,
+    Spinner,
   },
 })
 export default class MangaView extends Vue {
-  private mangaList: Manga[] = [
-    {
-      id: 'phantom-blood',
-      name: 'Phantom Blood',
-      cardImgSrc: require('@/assets/pb_card.png'),
-      backImgSrc: require('@/assets/dib_back.png'),
-      subName: 'Part 1',
-      desc: 'The story follows Jonathan Joestar as he matures with and eventually combats his adoptive brother, the cunning and merciless Dio Brando.',
-    },
-    {
-      id: 'diamond-is-unbreakable',
-      name: 'Diamond is Unbreakable',
-      cardImgSrc: require('@/assets/dib_card.png'),
-      backImgSrc: require('@/assets/dib_back.png'),
-      subName: 'Part 4',
-      desc: 'In 1999, the Arrow, manifesting latent Stand abilities, travels throughout Morioh, Japan; as high schooler Josuke Higashikata (illegitimate son of Joseph) and his friends seek out the culprits of a series of homicides. ',
-    },
-  ];
+  mangaList: Manga[] = [];
+  isPageReady: boolean = false;
+  counterLoading: number = 0;
+
+  created() {
+    MangaAPI.getMangaList()
+    .then(res => this.mangaList = res)
+    .catch(err => console.log(err));
+  }
+
+  finish() {
+    this.counterLoading++;
+    if (this.counterLoading == this.mangaList.length)
+      this.isPageReady = true;
+  }
 }
 </script>
 

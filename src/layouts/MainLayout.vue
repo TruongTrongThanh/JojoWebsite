@@ -1,7 +1,9 @@
 <template>
   <div class="main-layout">
     <main-header/>
-    <router-view class="offset"/>
+    <keep-alive>
+      <router-view class="offset"/>
+    </keep-alive>
   </div>
 </template>
 
