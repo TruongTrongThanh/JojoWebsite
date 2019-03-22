@@ -45,8 +45,9 @@ export default class MangaView extends Vue {
 
   finish() {
     this.counterLoading++;
-    if (this.counterLoading == this.mangaList.length)
+    if (this.counterLoading === this.mangaList.length) {
       this.isPageReady = true;
+    }
   }
 }
 </script>

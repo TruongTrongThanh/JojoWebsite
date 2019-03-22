@@ -18,6 +18,7 @@
     "member-access": [true, "no-public"],
     "arrow-parens": [true, "ban-single-arg-parens"],
     "curly": [true, "ignore-same-line"],
-    "max-line-length": false
+    "max-line-length": false,
+    "no-console": false
   }
 }
