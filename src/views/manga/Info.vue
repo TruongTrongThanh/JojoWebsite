@@ -1,16 +1,15 @@
 <template>
-  <div class="manga-info">
-    <div class="banner d-none d-lg-block">
-    </div>
+  <div v-if="manga" class="manga-info">
+    <div :style="{ 'background-image': `url(${manga.banner})` }" class="banner d-none d-lg-block"/>
     <div class="content container">
       <div class="mb-2 peak row">
         <div class="text-left w-75">
-          <h2 class="font-weight-bold d-none d-lg-block title">DIAMOND IS UNBREAKABLE</h2>
+          <h2 class="font-weight-bold d-none d-lg-block text-uppercase title">{{ manga.name }}</h2>
         </div>
       </div>
       <div class="mb-4 d-none d-lg-flex row">
-        <h4 class="text-left sub-title col">Part IV</h4>
-        <h3 class="text-right font-italic align-self-end author col">Araki Hirohiko</h3>
+        <h4 class="text-left sub-title col">{{ manga.subName }}</h4>
+        <h3 class="text-right font-italic align-self-end author col">{{ manga.author }}</h3>
       </div>
       <div class="mx-lg-4 no-gutters details row">
         <div 
@@ -22,31 +21,31 @@
             <div class="text-left">
               <div class="py-2 info-item no-gutters row">
                 <span class="col">Số chương:</span>
-                <span class="text-left col">100</span>
+                <span class="text-left col">{{ manga.chapterNumber }}</span>
               </div>
               <div class="py-2 info-item no-gutters row">
                 <span class="col">Đã dịch:</span>
-                <span class="text-left col">50</span>
+                <span class="text-left col">{{ manga.transChapterNumber }}</span>
               </div>
               <div class="py-2 info-item no-gutters row">
                 <span class="col">Năm:</span>
-                <span class="text-left col">1990 - 2000</span>
+                <span class="text-left col">{{ manga.yearStart }} - {{ manga.yearEnd !== -1 ? manga.yearEnd : 'Hiện tại' }}</span>
               </div>
               <div class="py-2 info-item no-gutters row">
                 <span class="col">Thể loại:</span>
                 <div class="text-left text-danger col">
                   <span 
-                    v-for="(genre, index) in genreList" 
-                    :key="genre" 
+                    v-for="(genre, index) in manga.genres"
+                    :key="genre.name"
                     :style="`color: ${genre.color}`">
                     {{ index == 0 ? genre.name : '&nbsp;' + genre.name }}
                   </span>
                 </div>
               </div>
-              <div class="py-2">In 1999, the Arrow, manifesting latent Stand abilities, travels throughout Morioh, Japan; as high schooler Josuke Higashikata (illegitimate son of Joseph) and his friends seek out the culprits of a series of homicides.</div>
+              <div class="py-2">{{ manga.desc }}</div>
             </div>
-            <div class="text-center buttons">
-              <button class="my-3 px-4 py-2 btn btn-success rounded-pill">Đọc chương đầu (001)</button>
+            <div v-if="manga.chapterList.length > 0" class="text-center buttons">
+              <button class="my-3 px-4 py-2 btn btn-success rounded-pill">Đọc chương đầu ({{ manga.chapterList[0].index }})</button>
             </div>
           </div>
         </div>
@@ -56,9 +55,9 @@
             <span class="mr-3 text-right col col-lg">Tìm kiếm</span>
             <input class="px-2 search form-control col-8 col-lg-4" type="text">
           </div>
-          <ul class="list container">
+          <ul v-if="manga.chapterList.length > 0" class="list container">
             <li 
-              v-for="(chapter, index) in chapterList" :key="chapter.id" 
+              v-for="(chapter, index) in manga.chapterList" :key="chapter.id" 
               :class="index % 2 == 0 ? 'dark' : 'darken'" 
               class="py-3 align-items-center item row"
             >
@@ -75,6 +74,11 @@
               </div>
             </li>
           </ul>
+          <ul v-else class="list container">
+            <li class="darken py-3 align-items-center item row">
+              Không có chương nào.
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -83,26 +87,18 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Genre, Chapter } from '@/models/manga.ts';
+import { Genre, Manga, Chapter, ChapterOptions } from '@/models/manga.ts';
+import * as MangaAPI from '@/apis/manga-api.ts';
 
 @Component
 export default class MangaInfo extends Vue {
-  genreList: Genre[] = [
-    {
-      name: 'thriller',
-      color: '#d74343',
-    },
-    {
-      name: 'slice of life',
-      color: 'green',
-    },
-    {
-      name: 'fantasy',
-      color: 'purple',
-    },
-  ];
+  manga: Manga | null = null;
 
-  chapterList: Chapter[] = [];
+  created() {
+    MangaAPI.getManga(this.$route.params.mangaID, ChapterOptions.ALPHABET_ASC)
+    .then(res => this.manga = res)
+    .catch(err => console.log(err))
+  }
 }
 </script>
 
@@ -113,7 +109,6 @@ export default class MangaInfo extends Vue {
     width: 100%;
     height: 400px;
     background-color: black;
-    background-image: url('../../assets/dib-large-banner.png');
     background-repeat: no-repeat;
     background-position: center; 
   }
@@ -125,18 +120,18 @@ export default class MangaInfo extends Vue {
     .title {
       padding: 5px 20px;
       font-family: 'Russo One', sans-serif;
-      background-image: linear-gradient(to right, rgba(255, 37, 200, 0.9) , rgba(255, 255, 255, 0));
+      background-image: linear-gradient(to right, rgba(255, 37, 200, 0.9) , transparent);
     }
 
     .sub-title {
       padding: 5px 20px;
       font-family: 'Abril Fatface', cursive;
-      background-image: linear-gradient(to right, rgba(24, 24, 24, 0.9) , rgba(255, 255, 255, 0));
+      background-image: linear-gradient(to right, rgba(24, 24, 24, 0.9) , transparent);
     }
 
     .author {
       padding: 5px 20px;
-      background-image: linear-gradient(to left, rgba(24, 24, 24, 0.9) , rgba(255, 255, 255, 0));
+      background-image: linear-gradient(to left, rgba(24, 24, 24, 0.9) , transparent);
     }
   }
 

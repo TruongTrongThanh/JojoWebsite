@@ -9,9 +9,9 @@ Vue.config.productionTip = false;
 
 // Firebase config
 const config = {
-  apiKey: 'AIzaSyAyaWKrUEnRMLql7-7KGoPTsw17cNjm22s',
-  databaseURL: 'https://thermal-pattern-175815.firebaseio.com',
-  projectId: 'thermal-pattern-175815',
+  apiKey: process.env.VUE_APP_API_KEY,
+  databaseURL: process.env.VUE_APP_DATABASE_URL,
+  projectId: process.env.VUE_APP_PROJECT_ID,
 };
 firebase.initializeApp(config);
 

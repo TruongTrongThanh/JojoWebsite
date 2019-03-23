@@ -1,5 +1,6 @@
-import { Manga, Chapter, Paper } from '@/models/manga.ts';
+import { Manga, Chapter, Paper, ChapterOptions } from '@/models/manga.ts';
 import firebase from 'firebase';
+import { NotFoundError } from '@/models/error.ts';
 import 'firebase/firestore';
 
 const db = firebase.firestore();
@@ -11,7 +12,7 @@ const db = firebase.firestore();
  * @param anchor Second output. Return the last record of result
  * @returns A promise of Manga List
  */
-export function getMangaList(lastVisible?: firebase.firestore.QueryDocumentSnapshot, limit?: number, anchor?: firebase.firestore.QueryDocumentSnapshot): Promise<Manga[]> {
+export function getMangaList(lastVisible?: firebase.firestore.QueryDocumentSnapshot, anchor?: firebase.firestore.QueryDocumentSnapshot, limit?: number): Promise<Manga[]> {
   return new Promise((resolve, reject) => {
     limit = limit || Number(process.env.VUE_APP_MANGA_LIMIT);
 
@@ -24,9 +25,8 @@ export function getMangaList(lastVisible?: firebase.firestore.QueryDocumentSnaps
       .then(snapshot => {
         const list: Manga[] = [];
         for (const doc of snapshot.docs) {
-          const data = doc.data();
-          data.id = doc.id;
-          list.push(ConvertToManga(data));
+          const m = convertToManga(doc);
+          if (m !== undefined) list.push(m);
         }
         anchor = snapshot.docs[snapshot.docs.length - 1];
         resolve(list);
@@ -35,32 +35,72 @@ export function getMangaList(lastVisible?: firebase.firestore.QueryDocumentSnaps
   });
 }
 
-export function getManga(id: string, withChapters?: boolean): Promise<Manga> {
-  return new Promise((resolve, reject) => {
-    const mangaRefs = db.collection('mangas');
-    mangaRefs.where('id', '==', id).get()
-    .then(res => {
-      const data = res.docs[0].data();
-      data.id = res.docs[0].id;
-      resolve(ConvertToManga(data));
-    })
-    .catch(err => reject(err));
-  });
+export async function getManga(id: string, chapterOptions?: ChapterOptions): Promise<Manga> {
+  const mangaRefs = db.collection('mangas');
+  const docRef = mangaRefs.doc(id)
+  const res = convertToManga(await docRef.get());
+  if (chapterOptions) {
+    const chapterRefs = db.collection('chapters');
+    let query = chapterRefs.where('manga', '==', docRef);
+    query = applyChapterOptions(query, chapterOptions);
+    const cRes = await query.get();
+    cRes.docs.forEach(chap => {
+      res.chapterList.push(convertToChapter(chap));
+    });
+  }
+  return res;
 }
 
 /***/
 /* Internal functions */
 /***/
-function ConvertToManga(data: any): Manga {
+function convertToManga(doc: firebase.firestore.DocumentSnapshot): Manga {
+  const data = doc.data();
+  if (!data) throw new NotFoundError('Manga not found');
   return {
-    id: data.id,
+    id: doc.id,
     name: data.name,
+    subName: data.subName,
+    author: data.author,
+    banner: data.banner,
     frontBarImgSrc: data.frontBarImgSrc,
     backBarImgSrc: data.backBarImgSrc,
-    subName: data.subName,
+    chapterNumber: data.chapterNumber,
+    transChapterNumber: data.transChapterNumber,
+    chapterList: [],
     desc: data.desc,
-    chapterList: data.chapterList || [],
-    createdAt: new Date(data.createdAt),
-    modifiedAt: new Date(data.modifiedAt),
+    genres: data.genres || [],
+    yearStart: data.yearStart,
+    yearEnd: data.yearEnd || -1,
+    createdAt: data.createdAt.toDate(),
+    modifiedAt: data.modifiedAt.toDate(),
   };
+}
+
+function convertToChapter(doc: firebase.firestore.DocumentSnapshot): Chapter {
+  const data = doc.data();
+  if (!data) throw new NotFoundError('Chapter not found');
+  console.log(data.createdAt.seconds);
+  return {
+    id: doc.id,
+    index: data.index,
+    name: data.name,
+    cardImgSrc: data.cardImgSrc,
+    manga: null,
+    paperList: [],
+    createdAt: data.createdAt.toDate(),
+    modifiedAt: data.modifiedAt.toDate(),
+  };
+}
+
+function applyChapterOptions(query: firebase.firestore.Query, options: ChapterOptions): firebase.firestore.Query {
+  let resQy: firebase.firestore.Query = query;
+  if (options.lastVisible) resQy = query.startAfter(options.lastVisible);
+  if (options.limit) resQy = query.limit(options.limit);
+  if (options.orderBy) {
+    for (const order of options.orderBy) {
+      resQy = query.orderBy(order.field, order.direction);
+    }
+  }
+  return resQy;
 }
