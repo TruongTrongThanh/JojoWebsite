@@ -1,7 +1,9 @@
 <template>
   <div class="reading-layout">
     <reading-header/>
-    <router-view/>
+    <keep-alive>
+      <router-view :class="{ offset: this.$route.query.mode === 'multi-page' }"/>
+    </keep-alive>
   </div>
 </template>
 
@@ -17,5 +19,5 @@ import ReadingHeader from '@/components/ReadingHeader.vue';
 export default class ReadingLayout extends Vue {}
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 </style>

@@ -4,16 +4,26 @@ import router from './router';
 import store from './store';
 import global from './mixins/global';
 import firebase from 'firebase';
+import VueProgressBar from 'vue-progressbar';
 
 Vue.config.productionTip = false;
 
 // Firebase config
-const config = {
+const firebaseConfig = {
   apiKey: process.env.VUE_APP_API_KEY,
   databaseURL: process.env.VUE_APP_DATABASE_URL,
   projectId: process.env.VUE_APP_PROJECT_ID,
 };
-firebase.initializeApp(config);
+firebase.initializeApp(firebaseConfig);
+
+// Vue-progressbar config
+const progressBarConfig = {
+  color: 'green',
+  thickness: '5px',
+  autoRevert: true,
+  autoFinish: false,
+};
+Vue.use(VueProgressBar, progressBarConfig);
 
 Vue.mixin(global);
 

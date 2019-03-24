@@ -1,7 +1,7 @@
 <template>
   <div class="main-layout">
     <main-header/>
-    <keep-alive>
+    <keep-alive exclude="MangaInfo">
       <router-view class="offset"/>
     </keep-alive>
   </div>
@@ -20,10 +20,4 @@ export default class MainLayout extends Vue {}
 </script>
 
 <style lang="scss">
-  .offset {
-    padding-top: 265px;
-    @media (min-width: 992px) {
-      padding-top: 90px;
-    }
-  }
 </style>

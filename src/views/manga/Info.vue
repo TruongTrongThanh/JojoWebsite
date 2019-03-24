@@ -1,6 +1,18 @@
 <template>
   <div v-if="manga" class="manga-info">
-    <div :style="{ 'background-image': `url(${manga.banner})` }" class="banner d-none d-lg-block"/>
+    <img
+      v-if="!isMobile"
+      v-show="bannerIsCompleted"
+      :src="manga.banner" 
+      class="banner"
+      @load="bannerIsCompleted = true"
+    >
+    <image-loading
+      v-if="!isMobile"
+      v-show="!bannerIsCompleted"
+      class="mx-auto"
+      name="mangaBanner" :width="screenWidth" :height="400"
+    />
     <div class="content container">
       <div class="mb-2 peak row">
         <div class="text-left w-75">
@@ -11,7 +23,7 @@
         <h4 class="text-left sub-title col">{{ manga.subName }}</h4>
         <h3 class="text-right font-italic align-self-end author col">{{ manga.author }}</h3>
       </div>
-      <div class="mx-lg-4 no-gutters details row">
+      <div class="mx-lg-4 no-gutters align-items-start details row">
         <div 
           :class="{ 'sticky-top sticky-top-offset': isMobile ? false : true }" 
           class="text-left mb-3 mb-lg-0 mr-lg-4 info align-self-start col-12 col-lg-4"
@@ -37,7 +49,8 @@
                   <span 
                     v-for="(genre, index) in manga.genres"
                     :key="genre.name"
-                    :style="`color: ${genre.color}`">
+                    :style="`color: ${genre.color}`"
+                  >
                     {{ index == 0 ? genre.name : '&nbsp;' + genre.name }}
                   </span>
                 </div>
@@ -56,9 +69,10 @@
             <input class="px-2 search form-control col-8 col-lg-4" type="text">
           </div>
           <ul v-if="manga.chapterList.length > 0" class="list container">
-            <li 
+            <router-link 
               v-for="(chapter, index) in manga.chapterList" :key="chapter.id" 
-              :class="index % 2 == 0 ? 'dark' : 'darken'" 
+              :class="index % 2 == 0 ? 'dark' : 'darken'"
+              :to="`/chapter/${chapter.id}`"
               class="py-3 align-items-center item row"
             >
               <div class="col-8 col-lg-9">
@@ -72,13 +86,11 @@
               <div class="text-right col col-lg-3">
                 <span class="mr-lg-2">{{ chapter.createdAt.toLocaleDateString("en-US") }}</span>
               </div>
-            </li>
+            </router-link>
           </ul>
-          <ul v-else class="list container">
-            <li class="darken py-3 align-items-center item row">
-              Không có chương nào.
-            </li>
-          </ul>
+          <h5 v-else class="py-3 text-muted text-center">
+            Không có chương nào :(
+          </h5>
         </div>
       </div>
     </div>
@@ -87,17 +99,38 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Genre, Manga, Chapter, ChapterOptions } from '@/models/manga.ts';
+import { Genre, Manga, Chapter } from '@/models/manga.ts';
+import { ChapterOptions } from '@/models/options.ts';
 import * as MangaAPI from '@/apis/manga-api.ts';
+import ImageLoading from '@/components/ImageLoading.vue';
 
-@Component
+@Component({
+  components: {
+    ImageLoading,
+  },
+})
 export default class MangaInfo extends Vue {
   manga: Manga | null = null;
 
+  bannerIsCompleted: boolean = false;
+
+  get screenWidth(): number {
+    return screen.width;
+  }
+
   created() {
+    console.log('manga view');
+    this.$Progress.start();
+
     MangaAPI.getManga(this.$route.params.mangaID, ChapterOptions.ALPHABET_ASC)
-    .then(res => this.manga = res)
-    .catch(err => console.log(err))
+    .then(res => {
+      this.manga = res;
+      this.$Progress.finish();
+    })
+    .catch(err => {
+      console.log(err);
+      this.$Progress.fail();
+    });
   }
 }
 </script>
@@ -109,13 +142,16 @@ export default class MangaInfo extends Vue {
     width: 100%;
     height: 400px;
     background-color: black;
-    background-repeat: no-repeat;
-    background-position: center; 
+
+    object-fit: contain;
   }
 
   .content {
     position: relative;
-    bottom: 170px;
+
+    @media (min-width: 992px) { 
+      bottom: 170px;
+    }
 
     .title {
       padding: 5px 20px;

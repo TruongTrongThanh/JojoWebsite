@@ -26,12 +26,6 @@
 						<a class="dropdown-item" href="#">Login with Facebook</a>
 					</div>
 				</li>
-				<li class="nav-item">
-					<form class="search-box">
-						<input class="form-control" type="search" placeholder="Tìm kiếm..." aria-label="Search">
-						<button class="btn btn-outline-success p-0" type="submit">Search</button>
-					</form>
-				</li>
 			</ul>
 		</div>
 	</nav>
@@ -49,12 +43,5 @@ export default class Header extends Vue {}
 		position: fixed;
 		width: 100%;
 		z-index: 9999;
-
-		.search-box {
-			display: grid;
-			grid-template-columns: 1fr 27%;
-			grid-column-gap: 5px;
-			width: 300px;
-		}
 	}
 </style>
