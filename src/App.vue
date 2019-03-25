@@ -1,16 +1,21 @@
 <template>
   <div id="app">
-    <keep-alive>
-      <router-view/>
-    </keep-alive>
+    <router-view/>
+    <error-modal/>
+    <button id="modal-open-btn" class="invisible" type="button" data-toggle="modal" data-target="#errorModal">Launch modal</button>
     <vue-progress-bar></vue-progress-bar>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import ErrorModal from '@/components/ErrorModal.vue';
 
-@Component
+@Component({
+  components: {
+    ErrorModal,
+  },
+})
 export default class App extends Vue {}
 </script>
 

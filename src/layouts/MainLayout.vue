@@ -1,9 +1,7 @@
 <template>
   <div class="main-layout">
     <main-header/>
-    <keep-alive exclude="MangaInfo">
-      <router-view class="offset"/>
-    </keep-alive>
+    <router-view class="offset"/>
   </div>
 </template>
 

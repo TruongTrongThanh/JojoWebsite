@@ -1,5 +1,5 @@
 import { Manga, Chapter, Paper } from '@/models/manga.ts';
-import { Options, ChapterOptions, PaperOptions } from '@/models/options.ts';
+import { Options, ChapterOptions, PaperOptions, MangaOptions } from '@/models/options.ts';
 import firebase from 'firebase';
 import { NotFoundError } from '@/models/error.ts';
 import 'firebase/firestore';
@@ -12,83 +12,66 @@ type CollectionReference = firebase.firestore.CollectionReference;
 
 const db = firebase.firestore();
 
-/**
- * Get manga list
- * @param lastVisible The last record of previous page (for pagination)
- * @param limit Number ranges for record
- * @param anchor Second output. Return the last record of result
- * @returns A promise of Manga List
- */
-export function getMangaList(lastVisible?: QueryDocumentSnapshot, anchor?: QueryDocumentSnapshot, limit?: number): Promise<Manga[]> {
-  return new Promise((resolve, reject) => {
-    limit = limit || Number(process.env.VUE_APP_MANGA_LIMIT);
-
-    const mangaRefs = db.collection('mangas');
-    let query = mangaRefs.orderBy('createdAt', 'desc');
-    if (lastVisible) query = query.startAfter(lastVisible);
-    query = query.limit(limit);
-
-    query.get()
-      .then(snapshot => {
-        const list: Manga[] = [];
-        for (const doc of snapshot.docs) {
-          const m = convertToManga(doc);
-          if (m !== undefined) list.push(m);
-        }
-        anchor = snapshot.docs[snapshot.docs.length - 1];
-        resolve(list);
-      })
-      .catch(err => reject(err));
-  });
-}
-
-export async function getManga(id: string, chapterOptions?: ChapterOptions): Promise<Manga> {
-  const mangaRefs = db.collection('mangas');
-  const docRef = mangaRefs.doc(id);
-  const manga = convertToManga(await docRef.get());
-  if (chapterOptions) {
-     manga.chapterList = await getChapterList(docRef, chapterOptions);
-  }
-  return manga;
-}
-
-export async function getChapterList(mangaRef?: DocumentReference, chapterOptions?: ChapterOptions): Promise<Chapter[]> {
-  const chapterRefs = db.collection('chapters');
-  let query: CollectionReference | Query = chapterRefs;
-  if (mangaRef) query.where('manga', '==', mangaRef);
-  if (chapterOptions) query = applyOptions(query, chapterOptions);
+export async function getMangaList(options?: MangaOptions): Promise<Manga[]> {
+  const list: Manga[] = [];
+  let query: Query | CollectionReference = db.collection('mangas');
+  query = applyOptions(query, options || MangaOptions.NEWEST);
   const res = await query.get();
-  const list: Chapter[] = [];
-  res.docs.forEach(chap => {
-    if (chap.exists) list.push(convertToChapter(chap));
+  if (res.size === 0) throw new NotFoundError('No manga(s) is available');
+  res.forEach(snapshot => {
+    list.push(convertToManga(snapshot));
   });
   return list;
 }
 
-export async function getChapter(id: string, paperOptions?: PaperOptions): Promise<Chapter> {
-  const chapterRefs = db.collection('chapters');
-  const docRef = chapterRefs.doc(id);
-  let paperList: Promise<Paper[]>;
-  const snapshotPromise = docRef.get();
-  const chapterSnapshot = await snapshotPromise;
-  const chapter = convertToChapter(chapterSnapshot);
-  await addingManga(chapter, chapterSnapshot);
-  if (paperOptions) {
-    paperList = getPaperList(docRef, paperOptions);
-    chapter.paperList = await paperList;
+export async function getMangaByID(ref: string | DocumentReference): Promise<Manga> {
+  if (typeof ref === 'string') {
+    ref = db.collection('mangas').doc(ref);
   }
-  return chapter;
+  const res = await ref.get();
+  return convertToManga(res);
 }
 
-export async function getPaperList(chapterRef?: DocumentReference, paperOptions?: PaperOptions): Promise<Paper[]> {
-  const paperRefs = db.collection('papers');
-  let query: CollectionReference | Query = paperRefs;
-  if (chapterRef) query = query.where('chapter', '==', chapterRef);
-  if (paperOptions) query = applyOptions(query, paperOptions);
+export async function getChapterList(mangaRef?: string | DocumentReference, options?: ChapterOptions): Promise<Chapter[]> {
+  const list: Chapter[] = [];
+  let query: Query | CollectionReference = db.collection('chapters');
+  if (mangaRef) {
+    if (typeof mangaRef === 'string') {
+      mangaRef = db.collection('mangas').doc(mangaRef);
+    }
+    query = query.where('mangaRef', '==', mangaRef);
+  }
+  query = applyOptions(query, options || ChapterOptions.ALPHABET_ASC);
   const res = await query.get();
+  if (res.size === 0) throw new NotFoundError('No chapter(s) is available');
+  res.forEach(snapshot => {
+    list.push(convertToChapter(snapshot));
+  });
+  return list;
+}
+
+export async function getChapterByID(ref: string | DocumentReference): Promise<Chapter> {
+  if (typeof ref === 'string') {
+    ref = db.collection('chapters').doc(ref);
+  }
+  const res = await ref.get();
+  return convertToChapter(res);
+}
+
+export async function getPaperList(chapterRef?: string | DocumentReference, options?: PaperOptions): Promise<Paper[]> {
   const list: Paper[] = [];
-  res.forEach(paper => {
-    if (paper.exists) list.push(convertToPaper(paper));
+  let query: Query | CollectionReference = db.collection('papers');
+  if (chapterRef) {
+    if (typeof chapterRef === 'string') {
+      chapterRef = db.collection('chapters').doc(chapterRef);
+    }
+    query = query.where('chapterRef', '==', chapterRef);
+  }
+  query = applyOptions(query, options || PaperOptions.INDEX_ASC);
+  const res = await query.get();
+  if (res.size === 0) throw new NotFoundError('No page(s) is available');
+  res.forEach(snapshot => {
+    list.push(convertToPaper(snapshot));
   });
   return list;
 }
@@ -105,7 +88,6 @@ function convertToManga(doc: DocumentSnapshot): Manga {
     subName: data.subName,
     author: data.author,
     banner: data.banner,
-    frontBarImgSrc: data.frontBarImgSrc,
     backBarImgSrc: data.backBarImgSrc,
     chapterNumber: data.chapterNumber,
     transChapterNumber: data.transChapterNumber,
@@ -127,20 +109,12 @@ function convertToChapter(doc: DocumentSnapshot): Chapter {
     index: data.index,
     name: data.name,
     cardImgSrc: data.cardImgSrc,
-    manga: undefined,
+    mangaRef: data.mangaRef,
+    paperListSize: data.paperListSize,
     paperList: [],
     createdAt: data.createdAt.toDate(),
     modifiedAt: data.modifiedAt.toDate(),
   };
-}
-
-async function addingManga(chapter: Chapter, doc: DocumentSnapshot) {
-  const data = doc.data();
-  if (!data) throw new NotFoundError('Chapter not found');
-  if (data.manga) {
-    const mangaRef = data.manga as DocumentReference;
-    chapter.manga = await getManga(mangaRef.id, ChapterOptions.ALPHABET_ASC);
-  }
 }
 
 function convertToPaper(doc: DocumentSnapshot): Paper {
@@ -150,7 +124,7 @@ function convertToPaper(doc: DocumentSnapshot): Paper {
     id: doc.id,
     index: data.index,
     url: data.url,
-    chapter: undefined,
+    chapterRef: data.chapterRef,
     createdAt: data.createdAt.toDate(),
     modifiedAt: data.modifiedAt.toDate(),
   };

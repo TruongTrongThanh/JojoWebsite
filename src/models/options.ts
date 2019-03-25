@@ -12,6 +12,22 @@ export abstract class Options {
   }
 }
 
+export class MangaOptions extends Options {
+  static get ALPHABET_ASC(): MangaOptions {
+    return new MangaOptions(
+      { field: 'name', direction: 'asc' },
+      Number(process.env.VUE_APP_MANGA_LIMIT),
+    );
+  }
+
+  static get NEWEST(): MangaOptions {
+    return new MangaOptions(
+      { field: 'createdAt', direction: 'desc' },
+      Number(process.env.VUE_APP_MANGA_LIMIT),
+    );
+  }
+}
+
 export class ChapterOptions extends Options {
   static get ALPHABET_ASC(): ChapterOptions {
     return new ChapterOptions(

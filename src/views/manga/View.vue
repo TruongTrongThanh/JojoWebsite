@@ -30,6 +30,7 @@ export default class MangaView extends Vue {
   mangaList: Manga[] = [];
 
   created() {
+    this.setTitle('Danh sách truyện');
     this.$Progress.start();
 
     MangaAPI.getMangaList()
@@ -37,10 +38,7 @@ export default class MangaView extends Vue {
       this.mangaList = res;
       this.$Progress.finish();
     })
-    .catch(err => {
-      console.log(err);
-      this.$Progress.fail();
-    });
+    .catch(err => this.handleError(err));
   }
 }
 </script>

@@ -1,10 +1,11 @@
+type DocumentReference = firebase.firestore.DocumentReference;
+
 export interface Manga {
   id: string;
   name: string;
   subName: string;
   author: string;
   banner: string;
-  frontBarImgSrc: string;
   backBarImgSrc: string;
   chapterNumber: number;
   transChapterNumber: number;
@@ -21,7 +22,8 @@ export interface Chapter {
   index: number;
   name: string;
   cardImgSrc: string;
-  manga?: Manga;
+  mangaRef: DocumentReference;
+  paperListSize: number;
   paperList: Paper[];
   createdAt: Date;
   modifiedAt: Date;
@@ -31,7 +33,7 @@ export interface Paper {
   id: string;
   index: number;
   url: ImageURL;
-  chapter?: Chapter;
+  chapterRef: DocumentReference;
   createdAt: Date;
   modifiedAt: Date;
 }

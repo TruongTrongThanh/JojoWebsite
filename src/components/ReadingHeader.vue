@@ -1,35 +1,35 @@
 <template>
   <nav
 		:class="{ 'position-fixed': $route.query.mode === 'multi-page' }"
-		class="p-0 reading-header navbar navbar-expand-lg navbar-dark bg-dark"
+		class="p-0 mb-3 reading-header navbar navbar-expand-lg navbar-dark bg-dark"
 	>
 		<router-link
-			:to="chapterInfo ? `/manga/${chapterInfo.manga.id}` : ''"
-			class="mr-0 mr-lg-3 clickable navbar-brand"
+			:to="mangaInfo ? `/manga/${mangaInfo.id}` : ''"
+			class="mr-0 mr-lg-3 clickable arrow-wrapper navbar-brand"
 		>
 			<span class="back-arrow">&laquo;</span>
 		</router-link>
+		<router-link
+			v-if="mangaInfo"
+			:to="`/manga/${mangaInfo.id}`"
+			class="mr-lg-5 mb-0 d-none d-lg-block"
+			tag="h4"
+		>
+			{{ mangaInfo.name }}
+		</router-link>
 		<select
-			v-if="chapterInfo"
-			:style="{
-				width: isMobile ? '20%' : '350px',
-				'flex-grow': isMobile ? 0.8 : 0,
-			}"
-			class="form-control form-control-sm"
+			v-if="mangaInfo"
+			class="ml-lg-3 d-lg-none mobile-chapter-select form-control form-control-sm"
 		>
 			<option
-				v-for="chapter in chapterInfo.manga.chapterList"
+				v-for="chapter in mangaInfo.chapterList"
 				:key="chapter.id"
 				v-text="chapter.name"
 			/>
 		</select>
 		<select
 			v-else
-			:style="{
-				width: isMobile ? 'auto' : '350px',
-				'flex-grow': isMobile ? 0.8 : 0,
-			}"
-			class="form-control form-control-sm"
+			class="ml-lg-3 d-lg-none mobile-chapter-select form-control form-control-sm"
 		>
 			<option>Loading...</option>
 		</select>
@@ -38,6 +38,9 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="ml-auto navbar-nav">
+				<li class="d-lg-none navbar-brand">
+					{{ mangaInfo ? mangaInfo.name : 'Loading...' }}
+				</li>
 				<li class="px-5 px-lg-0 mr-lg-3 mb-3 mb-lg-0 nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						Mode
@@ -46,6 +49,24 @@
 						<a class="dropdown-item" href="#">One page mode</a>
 						<a class="dropdown-item" href="#">Multi page mode</a>
 					</div>
+				</li>
+				<li class="mr-3 d-none d-lg-flex form-inline">
+					<select
+						v-if="mangaInfo"
+						class="desktop-chapter-select form-control form-control-sm"
+					>
+						<option
+							v-for="chapter in mangaInfo.chapterList"
+							:key="chapter.id"
+							v-text="chapter.name"
+						/>
+					</select>
+					<select
+						v-else
+						class="form-control form-control-sm"
+					>
+						<option>Loading...</option>
+					</select>
 				</li>
 			</ul>
 		</div>
@@ -63,9 +84,11 @@ export default class ReadingHeader extends Vue {
 	chapterReading = getModule(ChapterReading, this.$store);
 
 	get chapterInfo(): Chapter | null {
-		if (this.chapterReading.chapterInfo !== null)
-			return this.chapterReading.chapterInfo;
-		return null;
+		return this.chapterReading.chapterInfo;
+	}
+
+	get mangaInfo(): Manga | null {
+		return this.chapterReading.mangaInfo;
 	}
 }
 </script>
@@ -76,10 +99,19 @@ export default class ReadingHeader extends Vue {
 		z-index: 9999;
 	}
 
-	.navbar-brand {
+	.arrow-wrapper {
 		background-color: #3f3b8b;
 		font-size: 40px;
 		padding: 5px 10px;
+	}
+
+	.mobile-chapter-select {
+		width: 20%;
+		flex-grow: 0.8;
+	}
+
+	.desktop-chapter-select {
+		max-width: 240px;
 	}
 
 	.back-arrow {

@@ -1,9 +1,7 @@
 <template>
   <div class="reading-layout">
     <reading-header/>
-    <keep-alive>
-      <router-view :class="{ offset: this.$route.query.mode === 'multi-page' }"/>
-    </keep-alive>
+    <router-view :class="{ offset: this.$route.query.mode === 'multi-page' }"/>
   </div>
 </template>
 

@@ -119,18 +119,18 @@ export default class MangaInfo extends Vue {
   }
 
   created() {
-    console.log('manga view');
     this.$Progress.start();
-
-    MangaAPI.getManga(this.$route.params.mangaID, ChapterOptions.ALPHABET_ASC)
-    .then(res => {
-      this.manga = res;
-      this.$Progress.finish();
-    })
-    .catch(err => {
-      console.log(err);
-      this.$Progress.fail();
-    });
+    this.setTitle('Loading...');
+    const mangaPromise = MangaAPI.getMangaByID(this.$route.params.mangaID);
+    const chapterListPromise = MangaAPI.getChapterList(this.$route.params.mangaID);
+    Promise.all([mangaPromise, chapterListPromise])
+      .then(res => {
+        this.manga = res[0];
+        this.manga.chapterList = res[1];
+        this.setTitle(this.manga.name);
+        this.$Progress.finish();
+      })
+      .catch(err => this.handleError(err));
   }
 }
 </script>
