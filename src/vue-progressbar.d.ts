@@ -1,5 +1,5 @@
-declare module "vue-progressbar" {
-  import { PluginFunction } from "vue";
+declare module 'vue-progressbar' {
+  import { PluginFunction } from 'vue';
 
   export const install: PluginFunction<{}>;
 
@@ -10,7 +10,7 @@ declare module "vue-progressbar" {
     parseMeta(meta: any): void;
   }
 
-  module "vue/types/vue" {
+  module 'vue/types/vue' {
     interface Vue {
       $Progress: ProgressMethods;
     }

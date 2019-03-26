@@ -1,22 +1,10 @@
 <template>
-  <div class="one-page container">
-    <div class="mb-4 justify-content-center row">
-      <button class="btn btn-primary col-1" @click="jumpToPage(Page - 1)">Back</button>
-      <div class="input-group col-3">
-        <div class="input-group-prepend">
-          <div class="input-group-text">Trang</div>
-        </div>
-        <select class="form-control" v-model="selectedPage">
-          <option
-            v-for="i in ChapterInfo.paperListSize"
-            :key="i"
-            v-text="i"
-          />
-        </select>
-      </div>
-      <button class="btn btn-primary col-1" @click="jumpToPage(Page + 1)">Next</button>
+  <div class="one-page">
+    <div class="position-relative d-inline-block">
+      <img :src="UrlRender">
+      <div class="clickable prev-zone" @click="jumpToPage(Page - 1)"/>
+      <div class="clickable next-zone" @click="jumpToPage(Page + 1)"/>
     </div>
-    <img :src="UrlRender" class="clickable" @click="jumpToPage(Page + 1)">
   </div>
 </template>
 
@@ -24,7 +12,7 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import ChapterReading from '@/store/modules/chapter-reading.ts';
-import { Chapter, Paper } from '@/models/manga.ts';
+import { Manga, Chapter, Paper } from '@/models/manga.ts';
 import { PaperOptions } from '@/models/options.ts';
 import * as MangaAPI from '@/apis/manga-api.ts';
 
@@ -34,10 +22,11 @@ export default class OnePage extends Vue {
   private paper: Paper | null = null;
   private cachedPapers: Paper[] = [];
 
-  private selectedPage: number = 1;
-
-  get ChapterInfo(): Chapter | null {
-    return this.chapterReading.chapterInfo;
+  get MangaInfo(): Manga {
+    return this.chapterReading.mangaInfo!;
+  }
+  get ChapterInfo(): Chapter {
+    return this.chapterReading.chapterInfo!;
   }
 
   get UrlRender(): string {
@@ -52,17 +41,40 @@ export default class OnePage extends Vue {
     return this.strToNumber(this.$route.query.page as string, 1);
   }
 
-  @Watch('selectedPage')
-  onSelectedPageChanged(val: string, oldVal: string) {
-    this.jumpToPage(Number(val));
+  get SelectedPageIndex(): number {
+    return this.chapterReading.selectedPageIndex;
+  }
+  set SelectedPageIndex(val: number) {
+    this.chapterReading.setSelectedPageIndex(val);
+  }
+
+  get SelectedChapterID(): string {
+    return this.chapterReading.selectedChapterID;
+  }
+  set SelectedChapterID(id: string) {
+    this.chapterReading.setSelectedChapterID(id);
+  }
+
+  @Watch('SelectedPageIndex')
+  onSelectedPageIndexChanged(val: number, oldVal: number) {
+    this.jumpToPage(val);
+  }
+
+  @Watch('SelectedChapterID')
+  onSelectedChapterIDChanged(val: string, oldVal: string) {
+    this.cachedInitPage('1');
   }
 
   @Watch('$route.query.page')
   onPageChanged(val: string, oldVal: string) {
+    this.cachedInitPage(val);
+  }
+
+  cachedInitPage(val: string) {
     const page = this.strToNumber(val, 1);
     let i = 0;
     const cachedPaper = this.cachedPapers.find((paper, index) => {
-      if (paper.chapterRef.id === this.ChapterInfo!.id && paper.index === page) {
+      if (paper.chapterRef.id === this.ChapterInfo.id && paper.index === page) {
         i = index;
         return true;
       }
@@ -76,11 +88,11 @@ export default class OnePage extends Vue {
       this.$Progress.start();
       this.init();
     }
-    this.selectedPage = Number(page);
+    this.SelectedPageIndex = Number(page);
   }
 
   created() {
-    this.selectedPage = Number(this.Page);
+    this.SelectedPageIndex = Number(this.Page);
     this.init();
   }
 
@@ -105,7 +117,7 @@ export default class OnePage extends Vue {
         if (err.name === '404') {
           this.$router.push({
             name: 'manga-info',
-            params: { mangaID: this.ChapterInfo!.mangaRef.id },
+            params: { mangaID: this.ChapterInfo.mangaRef.id },
           });
         } else {
           this.handleError(err);
@@ -116,12 +128,12 @@ export default class OnePage extends Vue {
   jumpToPage(page: number) {
     if (page > 0) {
       this.$router.push({
-        query: { page: String(page) }
-      })
+        query: { page: String(page) },
+      });
     } else {
       this.$router.push({
         name: 'manga-info',
-        params: { mangaID: this.ChapterInfo!.mangaRef.id },
+        params: { mangaID: this.ChapterInfo.mangaRef.id },
       });
     }
   }
@@ -129,4 +141,17 @@ export default class OnePage extends Vue {
 </script>
 
 <style scoped lang="scss">
+  .prev-zone, .next-zone {
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+  }
+  .prev-zone {
+    left: 0;
+  }
+  .next-zone {
+    right: 0;
+  }
 </style>

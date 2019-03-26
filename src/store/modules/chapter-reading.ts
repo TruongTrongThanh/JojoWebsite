@@ -5,6 +5,8 @@ import { Manga, Chapter } from '@/models/manga';
 export default class ChapterReading extends VuexModule {
   chapterInfo: Chapter | null = null;
   mangaInfo: Manga | null = null;
+  selectedPageIndex: number = 1;
+  selectedChapterID: string = '';
 
   @Mutation
   setChapterInfo(chap: Chapter | null) {
@@ -14,5 +16,15 @@ export default class ChapterReading extends VuexModule {
   @Mutation
   setMangaInfo(m: Manga | null) {
     this.mangaInfo = m;
+  }
+
+  @Mutation
+  setSelectedPageIndex(n: number) {
+    this.selectedPageIndex = n;
+  }
+
+  @Mutation
+  setSelectedChapterID(id: string) {
+    this.selectedChapterID = id;
   }
 }
