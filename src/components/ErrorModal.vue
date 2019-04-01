@@ -9,7 +9,7 @@
           </button>
         </div>
         <div class="text-muted modal-body">
-          Vui lòng thử refresh (F5) lại trang web. Nếu lỗi vẫn xảy ra, hãy liên hệ với Jojo Group admin.
+          Vui lòng thử refresh (F5) trang web. Nếu lỗi vẫn xảy ra, hãy liên hệ với Jojo Group admin.
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
