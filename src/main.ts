@@ -3,7 +3,8 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import global from './mixins/global';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/database';
 import VueProgressBar from 'vue-progressbar';
 
 Vue.config.productionTip = false;
