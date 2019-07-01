@@ -8,13 +8,13 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
-import ErrorModal from '@/components/ErrorModal.vue';
+import { Vue, Component } from 'vue-property-decorator'
+import ErrorModal from '@/components/ErrorModal.vue'
 
 @Component({
   components: {
-    ErrorModal,
-  },
+    ErrorModal
+  }
 })
 export default class App extends Vue {}
 </script>

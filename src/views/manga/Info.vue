@@ -98,39 +98,42 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Genre, Manga, Chapter } from '@/models/manga.ts';
-import { ChapterOptions } from '@/models/options.ts';
-import * as MangaAPI from '@/apis/manga-api.ts';
-import ImageLoading from '@/components/ImageLoading.vue';
+import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Genre, Manga, Chapter } from '@/models/manga.ts'
+import { ChapterOptions } from '@/models/options.ts'
+import * as MangaAPI from '@/apis/manga-api.ts'
+import * as GenreAPI from '@/apis/genre-api.ts'
+import ImageLoading from '@/components/ImageLoading.vue'
 
 @Component({
   components: {
-    ImageLoading,
-  },
+    ImageLoading
+  }
 })
 export default class MangaInfo extends Vue {
-  manga: Manga | null = null;
+  manga: Manga | null = null
 
-  bannerIsCompleted: boolean = false;
+  bannerIsCompleted: boolean = false
 
   get screenWidth(): number {
-    return screen.width;
+    return screen.width
   }
 
   created() {
-    this.$Progress.start();
-    this.setTitle('Loading...');
-    const mangaPromise = MangaAPI.getMangaByID(this.$route.params.mangaID);
-    const chapterListPromise = MangaAPI.getChapterList(this.$route.params.mangaID);
-    Promise.all([mangaPromise, chapterListPromise])
+    this.$Progress.start()
+    this.setTitle('Loading...')
+    const mangaPromise = MangaAPI.getMangaByID(this.$route.params.mangaID)
+    const chapterListPromise = MangaAPI.getChapterList(this.$route.params.mangaID)
+    const genreListPromise = GenreAPI.getGenreListFromManga(this.$route.params.mangaID)
+    Promise.all([mangaPromise, chapterListPromise, genreListPromise])
       .then(res => {
-        this.manga = res[0];
-        this.manga.chapterList = res[1];
-        this.setTitle(this.manga.name);
-        this.$Progress.finish();
+        this.manga = res[0]
+        this.manga.chapterList = res[1]
+        this.manga.genres = res[2]
+        this.setTitle(this.manga.name)
+        this.$Progress.finish()
       })
-      .catch(err => this.handleError(err));
+      .catch(err => this.handleError(err))
   }
 }
 </script>

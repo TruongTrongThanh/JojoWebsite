@@ -9,78 +9,77 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import { getModule } from 'vuex-module-decorators';
-import ChapterReading from '@/store/modules/chapter-reading.ts';
-import { Manga, Chapter, Paper } from '@/models/manga.ts';
-import { PaperOptions } from '@/models/options.ts';
-import * as MangaAPI from '@/apis/manga-api.ts';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { getModule } from 'vuex-module-decorators'
+import ChapterReading from '@/store/modules/chapter-reading.ts'
+import { Manga, Chapter, Paper } from '@/models/manga.ts'
+import { PaperOptions } from '@/models/options.ts'
+import * as MangaAPI from '@/apis/manga-api.ts'
 
 @Component
 export default class OnePage extends Vue {
-  private paper: Paper | null = null;
-  
-  chapterReading = getModule(ChapterReading, this.$store);
-  //private cachedPapers: Paper[] = [];
+  // private cachedPapers: Paper[] = [];
 
   get MangaInfo(): Manga {
-    return this.chapterReading.mangaInfo!;
+    return this.chapterReading.mangaInfo!
   }
   get ChapterInfo(): Chapter {
-    return this.chapterReading.chapterInfo!;
+    return this.chapterReading.chapterInfo!
   }
 
   get UrlRender(): string {
     if (this.paper) {
-      return this.paper.url.blogspot;
+      return this.paper.url.blogspot
     } else {
-      return '';
+      return ''
     }
   }
 
   get Page(): number {
-    return this.strToNumber(this.$route.query.page as string, 1);
+    return this.strToNumber(this.$route.query.page as string, 1)
   }
 
   get SelectedPageIndex(): number {
-    return this.chapterReading.selectedPageIndex;
+    return this.chapterReading.selectedPageIndex
   }
   set SelectedPageIndex(val: number) {
-    this.chapterReading.setSelectedPageIndex(val);
+    this.chapterReading.setSelectedPageIndex(val)
   }
 
   get SelectedChapterID(): string {
-    return this.chapterReading.selectedChapterID;
+    return this.chapterReading.selectedChapterID
   }
   set SelectedChapterID(id: string) {
-    this.chapterReading.setSelectedChapterID(id);
+    this.chapterReading.setSelectedChapterID(id)
   }
+
+  chapterReading = getModule(ChapterReading, this.$store)
+  private paper: Paper | null = null
 
   prevPage() {
     if (this.Page <= 1) {
-      if (this.ChapterInfo.index <= 1) this.$emit('out');
+      if (this.ChapterInfo.index <= 1) this.$emit('out')
       else {
-        const prevChapter = this.MangaInfo.chapterList.find(c => c.index === this.ChapterInfo.index - 1);
-        this.$emit('prev-chapter', prevChapter!.id);
+        const prevChapter = this.MangaInfo.chapterList.find(c => c.index === this.ChapterInfo.index - 1)
+        this.$emit('prev-chapter', prevChapter!.id)
       }
-    } 
-    else {
-      this.jumpToPage(this.Page - 1);
+    } else {
+      this.jumpToPage(this.Page - 1)
     }
   }
   nextPage() {
     if (this.Page >= this.ChapterInfo.paperListSize) {
-      if (this.ChapterInfo.index >= this.MangaInfo.transChapterNumber) this.$emit('out');
-      else this.$emit('next-chapter');
+      if (this.ChapterInfo.index >= this.MangaInfo.transChapterNumber) this.$emit('out')
+      else this.$emit('next-chapter')
     } else {
-      this.jumpToPage(this.Page + 1);
+      this.jumpToPage(this.Page + 1)
     }
   }
 
   jumpToPage(p: number) {
     this.$router.push({
-      query: { page: String(p) },
-    });
+      query: { page: String(p) }
+    })
   }
 
   // cachedInitPage(val: string) {

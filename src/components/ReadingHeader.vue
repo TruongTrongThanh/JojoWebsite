@@ -111,43 +111,43 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator';
-import ChapterReading from '@/store/modules/chapter-reading.ts';
-import { Manga, Chapter } from '@/models/manga.ts';
-import { getModule } from 'vuex-module-decorators';
+import { Vue, Component, Watch } from 'vue-property-decorator'
+import ChapterReading from '@/store/modules/chapter-reading.ts'
+import { Manga, Chapter } from '@/models/manga.ts'
+import { getModule } from 'vuex-module-decorators'
 
 @Component
 export default class ReadingHeader extends Vue {
-  chapterReading = getModule(ChapterReading, this.$store);
+  chapterReading = getModule(ChapterReading, this.$store)
 
   get ChapterInfo(): Chapter | null {
-    return this.chapterReading.chapterInfo;
+    return this.chapterReading.chapterInfo
   }
 
   get MangaInfo(): Manga | null {
-    return this.chapterReading.mangaInfo;
+    return this.chapterReading.mangaInfo
   }
 
   get selectedPageIndex(): number {
-    return this.chapterReading.selectedPageIndex;
+    return this.chapterReading.selectedPageIndex
   }
   set selectedPageIndex(n: number) {
-    this.chapterReading.setSelectedPageIndex(n);
+    this.chapterReading.setSelectedPageIndex(n)
   }
 
   get selectedChapterID(): string {
-    return this.chapterReading.selectedChapterID;
+    return this.chapterReading.selectedChapterID
   }
   set selectedChapterID(id: string) {
-    this.chapterReading.setSelectedChapterID(id);
+    this.chapterReading.setSelectedChapterID(id)
   }
 
   @Watch('selectedChapterID')
   onSelectedChapterID(val: string, oldVal: string) {
     this.$router.push({
       name: 'chapter-view',
-      params: { chapterID: val },
-    });
+      params: { chapterID: val }
+    })
   }
 }
 </script>

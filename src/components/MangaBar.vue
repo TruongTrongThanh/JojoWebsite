@@ -29,24 +29,24 @@
 </template>
 
 <script lang="ts">
-import { Vue, Prop, Emit, Component } from 'vue-property-decorator';
-import { Manga } from '@/models/manga.ts';
-import ImageLoading from '@/components/ImageLoading.vue';
+import { Vue, Prop, Emit, Component } from 'vue-property-decorator'
+import { Manga } from '@/models/manga.ts'
+import ImageLoading from '@/components/ImageLoading.vue'
 
 @Component({
   components: {
-    ImageLoading,
-  },
+    ImageLoading
+  }
 })
 export default class MangaBar extends Vue {
-  @Prop() readonly manga!: Manga;
+  @Prop() readonly manga!: Manga
 
-  isExpand: boolean = false;
-  backIsCompleted: boolean = false;
+  isExpand: boolean = false
+  backIsCompleted: boolean = false
 
   shouldExpand(e: any) {
-    if (e.target.className === 'title') this.isExpand = false;
-    else this.isExpand = !this.isExpand;
+    if (e.target.className === 'title') this.isExpand = false
+    else this.isExpand = !this.isExpand
   }
 }
 </script>

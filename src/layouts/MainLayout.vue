@@ -6,13 +6,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import MainHeader from '@/components/Header.vue';
+import { Component, Vue } from 'vue-property-decorator'
+import MainHeader from '@/components/Header.vue'
 
 @Component({
   components: {
-    MainHeader,
-  },
+    MainHeader
+  }
 })
 export default class MainLayout extends Vue {}
 </script>

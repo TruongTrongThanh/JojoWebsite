@@ -19,6 +19,9 @@
     "arrow-parens": [true, "ban-single-arg-parens"],
     "curly": [true, "ignore-same-line"],
     "max-line-length": false,
-    "no-console": false
+    "no-console": false,
+    "semicolon": [true, "never"],
+    "trailing-comma": [true, {"multiline": "never", "singleline": "never"}],
+    "max-classes-per-file": false
   }
 }

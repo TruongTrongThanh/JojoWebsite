@@ -14,26 +14,26 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component
 export default class ImageLoading extends Vue {
-  @Prop(String) readonly name!: string;
-  @Prop(Number) readonly width!: number;
-  @Prop(Number) readonly height!: number;
+  @Prop(String) readonly name!: string
+  @Prop(Number) readonly width!: number
+  @Prop(Number) readonly height!: number
 
-  private readonly ratio: number = 1 / 400;
+  private readonly ratio: number = 1 / 400
 
   get animationWidth(): number {
-    return this.width + 1300;
+    return this.width + 1300
   }
 
   get backgroundSize(): string {
-    return this.animationWidth + 'px ' + this.height + 'px';
+    return this.animationWidth + 'px ' + this.height + 'px'
   }
 
   get duration(): string {
-    return (this.animationWidth * this.ratio) + 's';
+    return (this.animationWidth * this.ratio) + 's'
   }
 
   mounted() {
@@ -45,10 +45,10 @@ export default class ImageLoading extends Vue {
       100% {
         background-position: ${this.animationWidth}px 0;
       }
-    }`;
-    const style = document.createElement('style');
-    style.innerHTML = keyframes;
-    document.body.appendChild(style);
+    }`
+    const style = document.createElement('style')
+    style.innerHTML = keyframes
+    document.body.appendChild(style)
   }
 }
 </script>

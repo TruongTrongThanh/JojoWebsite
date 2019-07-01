@@ -14,31 +14,31 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator'
 
-import MangaBar from '@/components/MangaBar.vue';
+import MangaBar from '@/components/MangaBar.vue'
 
-import { Manga } from '@/models/manga.ts';
-import * as MangaAPI from '@/apis/manga-api';
+import { Manga } from '@/models/manga.ts'
+import * as MangaAPI from '@/apis/manga-api'
 
 @Component({
   components: {
-    MangaBar,
-  },
+    MangaBar
+  }
 })
 export default class MangaView extends Vue {
-  mangaList: Manga[] = [];
+  mangaList: Manga[] = []
 
   created() {
-    this.setTitle('Danh sách truyện');
-    this.$Progress.start();
+    this.setTitle('Danh sách truyện')
+    this.$Progress.start()
 
     MangaAPI.getMangaList()
     .then(res => {
-      this.mangaList = res;
-      this.$Progress.finish();
+      this.mangaList = res
+      this.$Progress.finish()
     })
-    .catch(err => this.handleError(err));
+    .catch(err => this.handleError(err))
   }
 }
 </script>

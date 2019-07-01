@@ -6,13 +6,13 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
-import ReadingHeader from '@/components/ReadingHeader.vue';
+import { Vue, Component } from 'vue-property-decorator'
+import ReadingHeader from '@/components/ReadingHeader.vue'
 
 @Component({
   components: {
-    ReadingHeader,
-  },
+    ReadingHeader
+  }
 })
 export default class ReadingLayout extends Vue {}
 </script>

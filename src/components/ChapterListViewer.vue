@@ -13,11 +13,11 @@
 </template>
 
 <script lang="ts">
-import { Vue, Prop, Component } from 'vue-property-decorator';
+import { Vue, Prop, Component } from 'vue-property-decorator'
 
 @Component
 export default class ChapterListViewer extends Vue {
-  @Prop(Number) volId!: number;
+  @Prop(Number) volId!: number
 }
 </script>
 

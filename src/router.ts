@@ -1,16 +1,16 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+import Vue from 'vue'
+import Router from 'vue-router'
 
-Vue.use(Router);
+Vue.use(Router)
 
 export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
-      return savedPosition;
+      return savedPosition
     } else {
-      return { x: 0, y: 0 };
+      return { x: 0, y: 0 }
     }
   },
   routes: [
@@ -21,24 +21,24 @@ export default new Router({
         {
           path: '',
           name: 'home',
-          component: () => import('./views/Home.vue'),
+          component: () => import('./views/Home.vue')
         },
         {
           path: 'about',
           name: 'about',
-          component: () => import('./views/About.vue'),
+          component: () => import('./views/About.vue')
         },
         {
           path: 'manga',
           name: 'manga-view',
-          component: () => import('./views/manga/View.vue'),
+          component: () => import('./views/manga/View.vue')
         },
         {
           path: 'manga/:mangaID',
           name: 'manga-info',
-          component: () => import('./views/manga/Info.vue'),
-        },
-      ],
+          component: () => import('./views/manga/Info.vue')
+        }
+      ]
     },
     {
       path: '/chapter',
@@ -48,9 +48,9 @@ export default new Router({
         {
           path: ':chapterID',
           name: 'chapter-view',
-          component: () => import('./views/chapter/View.vue'),
-        },
-      ],
-    },
-  ],
-});
+          component: () => import('./views/chapter/View.vue')
+        }
+      ]
+    }
+  ]
+})
