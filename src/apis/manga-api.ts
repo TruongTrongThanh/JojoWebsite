@@ -1,15 +1,17 @@
-import { Manga, Chapter, Paper } from '@/models/manga'
+import { Manga, Chapter, Paper, Genre } from '@/models/manga'
 import { Options, ChapterOptions, PaperOptions, MangaOptions } from '@/models/options'
 import firebase from 'firebase'
 import { NotFoundError } from '@/models/error'
 import 'firebase/firestore'
 
 type DocumentSnapshot = firebase.firestore.DocumentSnapshot
+type DocumentReference = firebase.firestore.DocumentReference
 type Query = firebase.firestore.Query
 type CollectionReference = firebase.firestore.CollectionReference
 
 const db = firebase.firestore()
 
+// READ operations
 export async function getMangaList(options?: MangaOptions): Promise<Manga[]> {
   const list: Manga[] = []
   let query: Query | CollectionReference = db.collection('mangas')
@@ -22,39 +24,46 @@ export async function getMangaList(options?: MangaOptions): Promise<Manga[]> {
   return list
 }
 
-export async function getMangaByID(id: string): Promise<Manga> {
-  const ref = db.collection('mangas').doc(id)
+export async function getMangaByID(ref: string | DocumentReference): Promise<Manga> {
+  if (typeof ref === 'string') {
+    ref = db.collection('mangas').doc(ref)
+  }
   const res = await ref.get()
   return convertToManga(res)
 }
 
-export async function getChapterList(mangaID?: string, options?: ChapterOptions): Promise<Chapter[]> {
+export async function getChapterList(mangaRef?: string | DocumentReference, options?: ChapterOptions): Promise<Chapter[]> {
   const list: Chapter[] = []
   let query: Query | CollectionReference = db.collection('chapters')
-  if (mangaID) {
-    const mangaRef = db.collection('mangas').doc(mangaID)
+  if (mangaRef) {
+    if (typeof mangaRef === 'string') {
+      mangaRef = db.collection('mangas').doc(mangaRef)
+    }
     query = query.where('mangaRef', '==', mangaRef)
   }
   query = applyOptions(query, options || ChapterOptions.ALPHABET_ASC)
   const res = await query.get()
-  if (res.size === 0) throw new NotFoundError('No chapter(s) is available')
   res.forEach(snapshot => {
     list.push(convertToChapter(snapshot))
   })
   return list
 }
 
-export async function getChapterByID(id: string): Promise<Chapter> {
-  const ref = db.collection('chapters').doc(id)
+export async function getChapterByID(ref: string | DocumentReference): Promise<Chapter> {
+  if (typeof ref === 'string') {
+    ref = db.collection('chapters').doc(ref)
+  }
   const res = await ref.get()
   return convertToChapter(res)
 }
 
-export async function getPaperList(chapterID?: string, options?: PaperOptions): Promise<Paper[]> {
+export async function getPaperList(chapterRef?: string | DocumentReference, options?: PaperOptions): Promise<Paper[]> {
   const list: Paper[] = []
   let query: Query | CollectionReference = db.collection('papers')
-  if (chapterID) {
-    const chapterRef = db.collection('chapters').doc(chapterID)
+  if (chapterRef) {
+    if (typeof chapterRef === 'string') {
+      chapterRef = db.collection('chapters').doc(chapterRef)
+    }
     query = query.where('chapterRef', '==', chapterRef)
   }
   query = applyOptions(query, options || PaperOptions.INDEX_ASC)
@@ -62,6 +71,23 @@ export async function getPaperList(chapterID?: string, options?: PaperOptions): 
   if (res.size === 0) throw new NotFoundError('No page(s) is available')
   res.forEach(snapshot => {
     list.push(convertToPaper(snapshot))
+  })
+  return list
+}
+
+export async function getGenreList(fromManga?: string | DocumentReference): Promise<Genre[]> {
+  const list: Genre[] = []
+  let query: Query | CollectionReference = db.collection('genres')
+  if (fromManga) {
+    if (typeof fromManga === 'string') {
+      fromManga = db.collection('mangas').doc(fromManga)
+    }
+    query = query.where('mangaList', 'array-contains', fromManga)
+  }
+  const res = await query.get()
+  console.log(res.size)
+  res.forEach(snapshot => {
+    list.push(convertToGenre(snapshot))
   })
   return list
 }
@@ -117,6 +143,15 @@ function convertToPaper(doc: DocumentSnapshot): Paper {
     chapterRef: data.chapterRef,
     createdAt: data.createdAt.toDate(),
     modifiedAt: data.modifiedAt.toDate()
+  }
+}
+
+function convertToGenre(doc: DocumentSnapshot): Genre {
+  const data = doc.data()
+  if (!data) throw new NotFoundError('Genre not found')
+  return {
+    name: doc.id,
+    color: data.color
   }
 }
 

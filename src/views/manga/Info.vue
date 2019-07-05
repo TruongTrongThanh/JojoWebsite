@@ -102,7 +102,6 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import { Genre, Manga, Chapter } from '@/models/manga.ts'
 import { ChapterOptions } from '@/models/options.ts'
 import * as MangaAPI from '@/apis/manga-api.ts'
-import * as GenreAPI from '@/apis/genre-api.ts'
 import ImageLoading from '@/components/ImageLoading.vue'
 
 @Component({
@@ -112,7 +111,6 @@ import ImageLoading from '@/components/ImageLoading.vue'
 })
 export default class MangaInfo extends Vue {
   manga: Manga | null = null
-
   bannerIsCompleted: boolean = false
 
   get screenWidth(): number {
@@ -124,12 +122,13 @@ export default class MangaInfo extends Vue {
     this.setTitle('Loading...')
     const mangaPromise = MangaAPI.getMangaByID(this.$route.params.mangaID)
     const chapterListPromise = MangaAPI.getChapterList(this.$route.params.mangaID)
-    const genreListPromise = GenreAPI.getGenreListFromManga(this.$route.params.mangaID)
+    const genreListPromise = MangaAPI.getGenreList(this.$route.params.mangaID)
     Promise.all([mangaPromise, chapterListPromise, genreListPromise])
       .then(res => {
         this.manga = res[0]
         this.manga.chapterList = res[1]
         this.manga.genres = res[2]
+        console.log(res[2])
         this.setTitle(this.manga.name)
         this.$Progress.finish()
       })
