@@ -32,11 +32,4 @@ export default class ErrorModal extends Vue {
 </script>
 
 <style scoped lang="scss">
-  #errorModal {
-    top: 120px;
-
-    .modal-header {
-      background-color: #e54f4f;
-    }
-  }
 </style>

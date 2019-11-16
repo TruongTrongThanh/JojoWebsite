@@ -1,32 +1,29 @@
 <template>
-  <div v-if="manga" class="manga-info">
+  <div v-if="manga" class="manga-details">
     <img
-      v-if="!isMobile"
       v-show="bannerIsCompleted"
       :src="manga.banner" 
       class="banner"
       @load="bannerIsCompleted = true"
     >
     <image-loading
-      v-if="!isMobile"
       v-show="!bannerIsCompleted"
       class="mx-auto"
       name="mangaBanner" :width="screenWidth" :height="400"
     />
-    <div class="content container">
-      <div class="mb-2 peak row">
+    <b-container class="content">
+      <b-row class="mb-2 peak">
         <div class="text-left w-75">
           <h2 class="font-weight-bold d-none d-lg-block text-uppercase title">{{ manga.name }}</h2>
         </div>
-      </div>
-      <div class="mb-4 d-none d-lg-flex row">
+      </b-row>
+      <b-row class="mb-4 d-none d-lg-flex">
         <h4 class="text-left sub-title col">{{ manga.subName }}</h4>
         <h3 class="text-right font-italic align-self-end author col">{{ manga.author }}</h3>
-      </div>
-      <div class="mx-lg-4 no-gutters align-items-start details row">
+      </b-row>
+      <b-row class="mx-lg-4 no-gutters align-items-start details">
         <div 
-          :class="{ 'sticky-top sticky-top-offset': isMobile ? false : true }" 
-          class="text-left mb-3 mb-lg-0 mr-lg-4 info align-self-start col-12 col-lg-4"
+          class="sticky-top sticky-top-offset text-left mb-3 mb-lg-0 mr-lg-4 info align-self-start col-12 col-lg-4"
         >
           <h4 class="m-0 p-2 text-center bar-title">Thông tin truyện</h4>
           <div class="py-3 px-4 bar-content">
@@ -79,7 +76,7 @@
                 <div class="no-gutters align-items-center mr-3 mr-lg-0 row">
                   <img class="mr-2 mr-lg-3 col-4 icon col-lg-2" :src="chapter.cardSrc || require('@/assets/no-image-icon.png')">
                   <div class="text-left text-truncate chapter-title col">
-                    {{ 'Chapter 00' + chapter.index }}{{ isMobile ? '' : ' - ' + chapter.name }}
+                    {{ 'Chapter 00' + chapter.index }}{{ ' - ' + chapter.name }}
                   </div>
                 </div>
               </div>
@@ -92,8 +89,8 @@
             Không có chương nào :(
           </h5>
         </div>
-      </div>
-    </div>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
@@ -102,14 +99,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import { Genre, Manga, Chapter } from '@/models/manga.ts'
 import { ChapterOptions } from '@/models/options.ts'
 import * as MangaAPI from '@/apis/manga-api.ts'
-import ImageLoading from '@/components/ImageLoading.vue'
 
-@Component({
-  components: {
-    ImageLoading
-  }
-})
-export default class MangaInfo extends Vue {
+export default class MangaDetails extends Vue {
   manga: Manga | null = null
   bannerIsCompleted: boolean = false
 
@@ -119,101 +110,100 @@ export default class MangaInfo extends Vue {
 
   created() {
     this.$Progress.start()
-    this.setTitle('Loading...')
-    const mangaPromise = MangaAPI.getMangaByID(this.$route.params.mangaID)
-    const chapterListPromise = MangaAPI.getChapterList(this.$route.params.mangaID)
-    const genreListPromise = MangaAPI.getGenreList(this.$route.params.mangaID)
+    this.$helper.setTitle('Loading...')
+    const mangaPromise = this.$mangaAPI.getMangaByID(this.$route.params.mangaID)
+    const chapterListPromise = this.$mangaAPI.getChapterList(this.$route.params.mangaID)
+    const genreListPromise = this.$mangaAPI.getGenreList(this.$route.params.mangaID)
     Promise.all([mangaPromise, chapterListPromise, genreListPromise])
-      .then(res => {
-        this.manga = res[0]
-        this.manga.chapterList = res[1]
-        this.manga.genres = res[2]
-        console.log(res[2])
-        this.setTitle(this.manga.name)
-        this.$Progress.finish()
-      })
-      .catch(err => this.handleError(err))
+    .then(res => {
+      this.manga = res[0]
+      this.manga.chapterList = res[1]
+      this.manga.genres = res[2]
+      this.$helper.setTitle(this.manga.name)
+      this.$Progress.finish()
+    })
+    .catch(err => this.$helper.handleError(err))
   }
 }
 </script>
 
 <style scoped lang="scss">
-  @import url('https://fonts.googleapis.com/css?family=Abril+Fatface|Francois+One|Russo+One');
+@import url('https://fonts.googleapis.com/css?family=Abril+Fatface|Francois+One|Russo+One');
 
-  .banner {
-    width: 100%;
-    height: 400px;
-    background-color: black;
+.banner {
+  width: 100%;
+  height: 400px;
+  background-color: black;
 
-    object-fit: contain;
+  object-fit: contain;
+}
+
+.content {
+  position: relative;
+
+  @media (min-width: 992px) { 
+    bottom: 170px;
   }
 
-  .content {
-    position: relative;
+  .title {
+    padding: 5px 20px;
+    font-family: 'Russo One', sans-serif;
+    background-image: linear-gradient(to right, rgba(255, 37, 200, 0.9) , transparent);
+  }
 
-    @media (min-width: 992px) { 
-      bottom: 170px;
-    }
+  .sub-title {
+    padding: 5px 20px;
+    font-family: 'Abril Fatface', cursive;
+    background-image: linear-gradient(to right, rgba(24, 24, 24, 0.9) , transparent);
+  }
 
-    .title {
-      padding: 5px 20px;
-      font-family: 'Russo One', sans-serif;
-      background-image: linear-gradient(to right, rgba(255, 37, 200, 0.9) , transparent);
-    }
+  .author {
+    padding: 5px 20px;
+    background-image: linear-gradient(to left, rgba(24, 24, 24, 0.9) , transparent);
+  }
+}
 
-    .sub-title {
-      padding: 5px 20px;
-      font-family: 'Abril Fatface', cursive;
-      background-image: linear-gradient(to right, rgba(24, 24, 24, 0.9) , transparent);
-    }
+.details {
+  position: relative;
+  bottom: 10px;
 
-    .author {
-      padding: 5px 20px;
-      background-image: linear-gradient(to left, rgba(24, 24, 24, 0.9) , transparent);
+  .info, .chapter {
+    background-color: rgba(0, 0, 0, .7);
+    width: 200px;
+    font-size: 17px;
+  }
+
+  .bar-title {
+    background-color: rgba(255, 37, 200, .7);
+    font-family: 'Francois One', sans-serif;
+  }
+
+  .sticky-top-offset {
+    top: 100px;
+  }
+
+  .info {
+    .info-item {
+      border-bottom: 1px solid #6f6f6f;
     }
   }
 
-  .details {
-      position: relative;
-      bottom: 10px;
-
-      .info, .chapter {
-        background-color: rgba(0, 0, 0, .7);
-        width: 200px;
-        font-size: 17px;
+  .chapter {
+    .search {
+      height: 28px;
+    }
+    .item {
+      .icon {
+        max-width: 65px;
       }
 
-      .bar-title {
-        background-color: rgba(255, 37, 200, .7);
-        font-family: 'Francois One', sans-serif;
+      &.dark {
+        background-color: rgba(0, 0, 0, .6);
       }
-
-      .sticky-top-offset {
-        top: 100px;
-      }
-
-      .info {
-        .info-item {
-          border-bottom: 1px solid #6f6f6f;
-        }
-      }
-
-      .chapter {
-        .search {
-          height: 28px;
-        }
-        .item {
-          .icon {
-            max-width: 65px;
-          }
-
-          &.dark {
-            background-color: rgba(0, 0, 0, .6);
-          }
-          &.darken {
-            background-color: rgba(26, 26, 26, .6);
-          }
-        }
+      &.darken {
+        background-color: rgba(26, 26, 26, .6);
       }
     }
+  }
+}
 </style>

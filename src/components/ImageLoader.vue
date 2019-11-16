@@ -1,6 +1,6 @@
 <template>
   <div
-    ref="imageLoading"
+    ref="imageLoader"
     :style="{
       'width': width + 'px',
       'height': height + 'px',
@@ -9,7 +9,7 @@
       'background-size': backgroundSize,
 
     }"
-    class="image-loading gradient"
+    class="image-loader gradient"
   />
 </template>
 
@@ -17,7 +17,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component
-export default class ImageLoading extends Vue {
+export default class ImageLoader extends Vue {
   @Prop(String) readonly name!: string
   @Prop(Number) readonly width!: number
   @Prop(Number) readonly height!: number
@@ -54,13 +54,13 @@ export default class ImageLoading extends Vue {
 </script>
 
 <style scoped lang="scss">
-  .gradient {
-    animation-fill-mode: forwards;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-    background: white;
-    background: linear-gradient(to right, #131313 8%, #353535 38%, #131313 54%);
-    background-repeat: none;
-    position: relative; 
-  }
+.gradient {
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  background: white;
+  background: linear-gradient(to right, #131313 8%, #353535 38%, #131313 54%);
+  background-repeat: none;
+  position: relative; 
+}
 </style>

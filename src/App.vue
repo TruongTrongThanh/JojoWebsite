@@ -1,52 +1,56 @@
 <template>
-  <div id="app">
-    <router-view/>
-    <error-modal/>
-    <button id="modal-open-btn" class="invisible" type="button" data-toggle="modal" data-target="#errorModal">Launch modal</button>
+  <v-app id="app">
+    <Drawer v-model="drawerToggle"/>
+
+    <v-app-bar app clipped-left
+      height="75"
+    >
+      <v-app-bar-nav-icon
+        class="d-none d-sm-block"
+        @click="drawerToggle = !drawerToggle"
+      />
+
+      <v-avatar class="ml-2">
+        <v-img :src="require('@/assets/logo.png')"></v-img>
+      </v-avatar>
+      <v-toolbar-title class="headline font-weight-bold">
+        JoJo Group Vietnam
+      </v-toolbar-title>
+    </v-app-bar>
+
+    <v-content>
+      <v-container>
+        <router-view/>
+      </v-container>
+    </v-content>
+
     <vue-progress-bar></vue-progress-bar>
-  </div>
+  </v-app>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import ErrorModal from '@/components/ErrorModal.vue'
+import Drawer from '@/components/Drawer.vue'
 
 @Component({
   components: {
-    ErrorModal
+    Drawer
   }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  drawerToggle: boolean = false
+}
 </script>
 
 <style lang="scss">
-  // Small devices (landscape phones, 576px and up)
-  // @media (min-width: 576px) { ... }
+@import './assets/css/reset.css';
 
-  // Medium devices (tablets, 768px and up)
-  // @media (min-width: 768px) { ... }
-
-  // Large devices (desktops, 992px and up)
-  // @media (min-width: 992px) { ... }
-
-  // Extra large devices (large desktops, 1200px and up)
-  // @media (min-width: 1200px) { ... }
-
-  @import './assets/css/reset.css';
-
-  #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: white;
-
-    .offset {
-      padding-top: 100px;
-    }
-
-    .clickable {
-      cursor: pointer;
-    }
+#app {
+  &.theme--dark {
+    background-image: url('assets/bg2.png');
   }
+  .loading-bg {
+    background-color: var(--v-secondary-darken1);
+  }
+}
 </style>

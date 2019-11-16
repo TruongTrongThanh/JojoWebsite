@@ -2,22 +2,25 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import global from './mixins/global'
-import firebase from 'firebase/app'
-import 'firebase/database'
-import VueProgressBar from 'vue-progressbar'
-
-Vue.config.productionTip = false
+import vuetify from '@/plugins/vuetify'
 
 // Firebase config
-const firebaseConfig = {
-  apiKey: process.env.VUE_APP_API_KEY,
-  databaseURL: process.env.VUE_APP_DATABASE_URL,
-  projectId: process.env.VUE_APP_PROJECT_ID
-}
-firebase.initializeApp(firebaseConfig)
+import FirebaseAPI from '@/apis/firebase'
+FirebaseAPI.config()
+
+// Dependency injection resolve
+import 'reflect-metadata'
+import Client from '@/apis/client'
+import { container } from 'tsyringe'
+import { MangaAPI } from '@/apis/manga-api'
+container.register('IMangaAPI', { useClass: MangaAPI })
+const client = container.resolve(Client)
+
+// API settings
+Vue.prototype.$mangaAPI = client.mangaAPI
 
 // Vue-progressbar config
+import VueProgressBar from 'vue-progressbar'
 const progressBarConfig = {
   color: 'green',
   thickness: '5px',
@@ -26,10 +29,19 @@ const progressBarConfig = {
 }
 Vue.use(VueProgressBar, progressBarConfig)
 
-Vue.mixin(global)
+// Plugin settings
+import { HelperPlugin } from '@/plugins/helper'
+Vue.use(HelperPlugin)
+
+Vue.config.errorHandler = (err, vm, info) => {
+  console.log('catch error in handler')
+}
+
+Vue.config.productionTip = false
 
 new Vue({
   router,
   store,
+  vuetify,
   render: h => h(App)
 }).$mount('#app')

@@ -18,7 +18,7 @@
 			{{ MangaInfo.name }}
 		</router-link>
 		<select
-			v-if="isMobile && MangaInfo"
+			v-if="MangaInfo"
 			v-model="selectedChapterID"
 			class="d-lg-none mobile-chapter-select form-control form-control-sm"
 		>
@@ -36,7 +36,7 @@
 			<option>Loading...</option>
 		</select>
 		<select 
-			v-if="isMobile && ChapterInfo"
+			v-if="ChapterInfo"
 			class="d-lg-none mobile-page-select form-control form-control-sm" 
 			v-model="selectedPageIndex"
 		>

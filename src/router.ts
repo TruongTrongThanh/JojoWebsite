@@ -16,41 +16,23 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: () => import('./layouts/MainLayout.vue'),
-      children: [
-        {
-          path: '',
-          name: 'home',
-          component: () => import('./views/Home.vue')
-        },
-        {
-          path: 'about',
-          name: 'about',
-          component: () => import('./views/About.vue')
-        },
-        {
-          path: 'manga',
-          name: 'manga-view',
-          component: () => import('./views/manga/View.vue')
-        },
-        {
-          path: 'manga/:mangaID',
-          name: 'manga-info',
-          component: () => import('./views/manga/Info.vue')
-        }
-      ]
+      name: 'home',
+      component: () => import('./views/Home.vue')
     },
     {
-      path: '/chapter',
-      name: 'reading-layout',
-      component: () => import('./layouts/ReadingLayout.vue'),
-      children: [
-        {
-          path: ':chapterID',
-          name: 'chapter-view',
-          component: () => import('./views/chapter/View.vue')
-        }
-      ]
+      path: '/about',
+      name: 'about',
+      component: () => import('./views/About.vue')
+    },
+    {
+      path: '/manga',
+      name: 'manga-list',
+      component: () => import('./views/manga/List.vue')
+    },
+    {
+      path: '/manga/:mangaID',
+      name: 'manga-details',
+      component: () => import('./views/manga/Details.vue')
     }
   ]
 })
