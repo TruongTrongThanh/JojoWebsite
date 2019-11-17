@@ -2,7 +2,7 @@
   <div
     :class="{ 'is-expand': expandToggle }"
     class="manga-bar elevation-20"
-    @click.stop="expandToggle = !expandToggle"
+    @click="expandToggle = !expandToggle"
   >
     <div class="text">
       <router-link :to="'/manga/' + manga.id">
@@ -33,11 +33,13 @@
       type="image"
     >
     </v-skeleton-loader>
-    <img v-show="!imgLoading"
-      :src="manga.backBarImgSrc"
-      class="background"
-      @load="imgLoading = false"
-    >
+    <v-fade-transition>
+      <img v-show="!imgLoading"
+        :src="manga.backBarImgSrc"
+        class="background"
+        @load="imgLoading = false"
+      >
+    </v-fade-transition>
   </div>
 </template>
 

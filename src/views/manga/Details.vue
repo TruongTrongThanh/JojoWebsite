@@ -1,96 +1,21 @@
 <template>
   <div v-if="manga" class="manga-details">
-    <img
-      v-show="bannerIsCompleted"
-      :src="manga.banner" 
-      class="banner"
-      @load="bannerIsCompleted = true"
+    <v-img
+      :src="manga.banner"
+      class="mt-7"
+      width="100%"
+      height="400"
     >
-    <image-loading
-      v-show="!bannerIsCompleted"
-      class="mx-auto"
-      name="mangaBanner" :width="screenWidth" :height="400"
-    />
-    <b-container class="content">
-      <b-row class="mb-2 peak">
-        <div class="text-left w-75">
-          <h2 class="font-weight-bold d-none d-lg-block text-uppercase title">{{ manga.name }}</h2>
-        </div>
-      </b-row>
-      <b-row class="mb-4 d-none d-lg-flex">
-        <h4 class="text-left sub-title col">{{ manga.subName }}</h4>
-        <h3 class="text-right font-italic align-self-end author col">{{ manga.author }}</h3>
-      </b-row>
-      <b-row class="mx-lg-4 no-gutters align-items-start details">
-        <div 
-          class="sticky-top sticky-top-offset text-left mb-3 mb-lg-0 mr-lg-4 info align-self-start col-12 col-lg-4"
-        >
-          <h4 class="m-0 p-2 text-center bar-title">Thông tin truyện</h4>
-          <div class="py-3 px-4 bar-content">
-            <div class="text-left">
-              <div class="py-2 info-item no-gutters row">
-                <span class="col">Số chương:</span>
-                <span class="text-left col">{{ manga.chapterNumber }}</span>
-              </div>
-              <div class="py-2 info-item no-gutters row">
-                <span class="col">Đã dịch:</span>
-                <span class="text-left col">{{ manga.transChapterNumber }}</span>
-              </div>
-              <div class="py-2 info-item no-gutters row">
-                <span class="col">Năm:</span>
-                <span class="text-left col">{{ manga.yearStart }} - {{ manga.yearEnd !== -1 ? manga.yearEnd : 'Hiện tại' }}</span>
-              </div>
-              <div class="py-2 info-item no-gutters row">
-                <span class="col">Thể loại:</span>
-                <div class="text-left text-danger col">
-                  <span 
-                    v-for="(genre, index) in manga.genres"
-                    :key="genre.name"
-                    :style="`color: ${genre.color}`"
-                  >
-                    {{ index == 0 ? genre.name : '&nbsp;' + genre.name }}
-                  </span>
-                </div>
-              </div>
-              <div class="py-2">{{ manga.desc }}</div>
-            </div>
-            <div v-if="manga.chapterList.length > 0" class="text-center buttons">
-              <button class="my-3 px-4 py-2 btn btn-success rounded-pill">Đọc chương đầu ({{ manga.chapterList[0].index }})</button>
-            </div>
-          </div>
-        </div>
-        <div class="chapter col-12 col-lg">
-          <h4 class="m-0 p-2 text-center bar-title">Danh sách chương</h4>
-          <div class="pr-3 py-3 align-items-center no-gutters row">
-            <span class="mr-3 text-right col col-lg">Tìm kiếm</span>
-            <input class="px-2 search form-control col-8 col-lg-4" type="text">
-          </div>
-          <ul v-if="manga.chapterList.length > 0" class="list container">
-            <router-link 
-              v-for="(chapter, index) in manga.chapterList" :key="chapter.id" 
-              :class="index % 2 == 0 ? 'dark' : 'darken'"
-              :to="`/chapter/${chapter.id}`"
-              class="py-3 align-items-center item row"
-            >
-              <div class="col-8 col-lg-9">
-                <div class="no-gutters align-items-center mr-3 mr-lg-0 row">
-                  <img class="mr-2 mr-lg-3 col-4 icon col-lg-2" :src="chapter.cardSrc || require('@/assets/no-image-icon.png')">
-                  <div class="text-left text-truncate chapter-title col">
-                    {{ 'Chapter 00' + chapter.index }}{{ ' - ' + chapter.name }}
-                  </div>
-                </div>
-              </div>
-              <div class="text-right col col-lg-3">
-                <span class="mr-lg-2">{{ chapter.createdAt.toLocaleDateString("en-US") }}</span>
-              </div>
-            </router-link>
-          </ul>
-          <h5 v-else class="py-3 text-muted text-center">
-            Không có chương nào :(
-          </h5>
-        </div>
-      </b-row>
-    </b-container>
+    </v-img>
+    <v-container class="content">
+      <MangaTitle :manga="manga"/>
+      <v-row>
+        <v-col cols="4">
+          <MangaInfo :manga="manga"/>
+        </v-col>
+        <v-col></v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -98,8 +23,15 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { Genre, Manga, Chapter } from '@/models/manga.ts'
 import { ChapterOptions } from '@/models/options.ts'
-import * as MangaAPI from '@/apis/manga-api.ts'
+import MangaTitle from '@/components/MangaTitle.vue'
+import MangaInfo from '@/components/MangaInfo.vue'
 
+@Component({
+  components: {
+    MangaTitle,
+    MangaInfo
+  }
+})
 export default class MangaDetails extends Vue {
   manga: Manga | null = null
   bannerIsCompleted: boolean = false
@@ -134,8 +66,6 @@ export default class MangaDetails extends Vue {
   width: 100%;
   height: 400px;
   background-color: black;
-
-  object-fit: contain;
 }
 
 .content {
@@ -143,23 +73,6 @@ export default class MangaDetails extends Vue {
 
   @media (min-width: 992px) { 
     bottom: 170px;
-  }
-
-  .title {
-    padding: 5px 20px;
-    font-family: 'Russo One', sans-serif;
-    background-image: linear-gradient(to right, rgba(255, 37, 200, 0.9) , transparent);
-  }
-
-  .sub-title {
-    padding: 5px 20px;
-    font-family: 'Abril Fatface', cursive;
-    background-image: linear-gradient(to right, rgba(24, 24, 24, 0.9) , transparent);
-  }
-
-  .author {
-    padding: 5px 20px;
-    background-image: linear-gradient(to left, rgba(24, 24, 24, 0.9) , transparent);
   }
 }
 

@@ -1,10 +1,11 @@
 <template>
-  <div class="manga-list">
+  <v-container class="manga-list">
     <!-- skeleton-loader design -->
     <div v-if="mangaListLoading">
       <v-skeleton-loader
         v-for="i in 3"
         :key="i"
+        transition="scale-transition"
         width="722"
         height="100"
         class="mb-3 loading-bg"
@@ -22,7 +23,7 @@
     </div>
 
     <AuthorNote/>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts">
