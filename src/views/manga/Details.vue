@@ -1,19 +1,30 @@
 <template>
   <div v-if="manga" class="manga-details">
-    <v-img
-      :src="manga.banner"
-      class="mt-7"
+    <v-skeleton-loader
+      :loading="bannerLoading"
       width="100%"
       height="400"
+      type="image"
+      class="content-expand"
+      transition="fade-transition"
     >
-    </v-img>
+      <v-img
+        :src="manga.banner"
+        class="mt-7"
+        width="100%"
+        height="400"
+      >
+      </v-img>
+    </v-skeleton-loader>
     <v-container class="content">
-      <MangaTitle :manga="manga"/>
+      <Title :manga="manga"/>
       <v-row>
         <v-col cols="4">
-          <MangaInfo :manga="manga"/>
+          <Info :manga="manga"/>
         </v-col>
-        <v-col></v-col>
+        <v-col>
+          <ChapterList :manga="manga"/>
+        </v-col>
       </v-row>
     </v-container>
   </div>
@@ -23,98 +34,84 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { Genre, Manga, Chapter } from '@/models/manga.ts'
 import { ChapterOptions } from '@/models/options.ts'
-import MangaTitle from '@/components/MangaTitle.vue'
-import MangaInfo from '@/components/MangaInfo.vue'
+import Title from '@/components/MangaTitle.vue'
+import Info from '@/components/MangaInfo.vue'
+import ChapterList from '@/components/MangaChapterList.vue'
 
 @Component({
   components: {
-    MangaTitle,
-    MangaInfo
+    Title,
+    Info,
+    ChapterList
   }
 })
 export default class MangaDetails extends Vue {
   manga: Manga | null = null
-  bannerIsCompleted: boolean = false
+  bannerLoading: boolean = true
 
   get screenWidth(): number {
     return screen.width
   }
 
-  created() {
+  async created() {
     this.$Progress.start()
+    await this.fetchManga()
+    await this.$helper.fetchImage(this.manga!.banner)
+    this.bannerLoading = false
+    this.$Progress.finish()
+  }
+
+  async fetchManga() {
     this.$helper.setTitle('Loading...')
     const mangaPromise = this.$mangaAPI.getMangaByID(this.$route.params.mangaID)
     const chapterListPromise = this.$mangaAPI.getChapterList(this.$route.params.mangaID)
     const genreListPromise = this.$mangaAPI.getGenreList(this.$route.params.mangaID)
-    Promise.all([mangaPromise, chapterListPromise, genreListPromise])
-    .then(res => {
-      this.manga = res[0]
-      this.manga.chapterList = res[1]
-      this.manga.genres = res[2]
+    try {
+      const [manga, chapterList, genres] = await Promise.all([
+        mangaPromise,
+        chapterListPromise,
+        genreListPromise
+      ])
+      this.manga = manga
+      this.manga.chapterList = chapterList
+      this.manga.genres = genres
+
+      // DUMMY
+      this.manga.themeColor = { r: 255, g: 37, b: 200, a: 1 }
+
       this.$helper.setTitle(this.manga.name)
-      this.$Progress.finish()
-    })
-    .catch(err => this.$helper.handleError(err))
+    } catch (err) {
+      this.$helper.handleError(err)
+    }
   }
 }
 </script>
 
-<style scoped lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Abril+Fatface|Francois+One|Russo+One');
+<style lang="scss">
+@import url('https://fonts.googleapis.com/css?family=Abril+Fatface|Russo+One');
 
-.banner {
-  width: 100%;
-  height: 400px;
-  background-color: black;
-}
-
-.content {
-  position: relative;
-
-  @media (min-width: 992px) { 
-    bottom: 170px;
+.manga-details {
+  .banner {
+    width: 100%;
+    height: 400px;
   }
-}
+  .content {
+    position: relative;
 
-.details {
-  position: relative;
-  bottom: 10px;
-
-  .info, .chapter {
-    background-color: rgba(0, 0, 0, .7);
-    width: 200px;
-    font-size: 17px;
-  }
-
-  .bar-title {
-    background-color: rgba(255, 37, 200, .7);
-    font-family: 'Francois One', sans-serif;
-  }
-
-  .sticky-top-offset {
-    top: 100px;
-  }
-
-  .info {
-    .info-item {
-      border-bottom: 1px solid #6f6f6f;
+    @media (min-width: 992px) {
+      bottom: 170px;
     }
   }
+  .details {
+    position: relative;
+    bottom: 10px;
 
-  .chapter {
-    .search {
-      height: 28px;
+    .sticky-top-offset {
+      top: 100px;
     }
-    .item {
-      .icon {
-        max-width: 65px;
-      }
-
-      &.dark {
-        background-color: rgba(0, 0, 0, .6);
-      }
-      &.darken {
-        background-color: rgba(26, 26, 26, .6);
+    .info {
+      .info-item {
+        border-bottom: 1px solid #6f6f6f;
       }
     }
   }

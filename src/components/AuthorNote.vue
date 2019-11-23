@@ -9,8 +9,8 @@
         src="https://vignette.wikia.nocookie.net/jjba/images/8/88/Araki3.png/revision/latest/scale-to-width-down/180?cb=20140611232702"
       >
     </div>
-
-    <v-divider class="mt-6"/>
+    <v-card-title class="py-0 justify-center">Araki Hirohiko</v-card-title>
+    <v-divider class="mt-3 mx-6"/>
 
     <v-card-text class="text--primary">
       <v-icon>mdi-format-quote-open</v-icon>
@@ -19,8 +19,6 @@
       </div>
       <div class="text-right"><v-icon>mdi-format-quote-close</v-icon></div>
     </v-card-text>
-
-    <v-card-title class="py-0 justify-end">Araki Hirohiko</v-card-title>
   </v-card>
 </template>
 

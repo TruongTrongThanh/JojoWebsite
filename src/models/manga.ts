@@ -4,6 +4,7 @@ export interface Manga {
   subName: string
   author: string
   banner: string
+  themeColor: ThemeColor
   backBarImgSrc: string
   chapterNumber: number
   transChapterNumber: number
@@ -26,7 +27,6 @@ export interface Chapter {
   createdAt: Date
   modifiedAt: Date
 }
-
 export interface Paper {
   id: string
   index: number
@@ -35,13 +35,16 @@ export interface Paper {
   createdAt: Date
   modifiedAt: Date
 }
-
 export interface Genre {
   name: string
   color: string
 }
-
 export interface ImageURL {
   [field: string]: string
 }
-
+export interface ThemeColor {
+  r: number
+  g: number
+  b: number
+  a: number
+}

@@ -1,7 +1,7 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
 import { Manga, Chapter } from '@/models/manga'
 
-@Module({ name: 'chapterReading' })
+@Module
 export default class ChapterReading extends VuexModule {
   chapterInfo: Chapter | null = null
   mangaInfo: Manga | null = null

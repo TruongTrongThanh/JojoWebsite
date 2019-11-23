@@ -20,8 +20,10 @@
 
     <v-divider></v-divider>
 
-    <v-list dense nav>
+    <v-list nav>
+      <v-subheader class="text-uppercase">Di chuyển</v-subheader>
       <v-list-item
+        dense
         v-for="item in navList"
         :key="item.title"
         @click="$router.push({name: item.routeName})"
@@ -34,16 +36,47 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
+
+    <v-list nav flat>
+      <v-subheader class="text-uppercase">Cài đặt</v-subheader>
+      <v-list-item dense>
+        <v-list-item-icon>
+          <v-icon>mdi-brightness-4</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content class="justify-between">
+          <v-list-item-title class="body-2">Nền tối</v-list-item-title>
+        </v-list-item-content>
+        <v-list-item-action class="ma-0">
+          <v-switch class="mt-0" hide-details dense v-model="darkModeModel"></v-switch>
+        </v-list-item-action>
+      </v-list-item>
+    </v-list>
   
   </v-navigation-drawer>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
+import { State } from 'vuex-class'
 
 @Component
 export default class Drawer extends Vue {
   @Prop({type: Boolean, required: true}) value!: boolean
+  @State(state => state.Settings.isDarkMode) isDarkMode!: boolean
+
+  get darkModeModel(): boolean {
+    return this.isDarkMode
+  }
+  set darkModeModel(val) {
+    this.$store.commit('setDarkMode', val)
+  }
+
+  get drawerToggle() {
+    return this.value
+  }
+  set drawerToggle(val: boolean) {
+    this.$emit('input', val)
+  }
 
   navList = [
     {
@@ -62,13 +95,6 @@ export default class Drawer extends Vue {
       routeName: '#'
     }
   ]
-
-  get drawerToggle() {
-    return this.value
-  }
-  set drawerToggle(val: boolean) {
-    this.$emit('input', val)
-  }
 }
 </script>
 

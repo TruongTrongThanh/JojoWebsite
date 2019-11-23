@@ -35,6 +35,7 @@ Vue.use(HelperPlugin)
 
 Vue.config.errorHandler = (err, vm, info) => {
   console.log('catch error in handler')
+  console.error(err)
 }
 
 Vue.config.productionTip = false

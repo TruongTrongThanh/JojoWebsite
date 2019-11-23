@@ -4,6 +4,7 @@ export interface Helper {
   setTitle(title: string): void
   handleError(err: Error): void
   strToNumber(str: string, defaultNumber: number): number
+  fetchImage(url: string): Promise<void>
 }
 
 export function HelperPlugin(Vue: typeof _Vue, options?: any): void {
@@ -14,6 +15,14 @@ export function HelperPlugin(Vue: typeof _Vue, options?: any): void {
     strToNumber(str: string, defaultNumber: number = 0): number {
       if (isNaN(Number(str))) return defaultNumber
       else return Number(str)
+    },
+    async fetchImage(url: string): Promise<void> {
+      return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve()
+        img.onerror = () => reject()
+        img.src = url
+      })
     },
     handleError(err: Error) {
       console.log(err)

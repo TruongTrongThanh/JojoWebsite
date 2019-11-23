@@ -27,7 +27,8 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Watch } from 'vue-property-decorator'
+import { State } from 'vuex-class'
 import Drawer from '@/components/Drawer.vue'
 
 @Component({
@@ -37,6 +38,12 @@ import Drawer from '@/components/Drawer.vue'
 })
 export default class App extends Vue {
   drawerToggle: boolean = false
+  @State(state => state.Settings.isDarkMode) isDarkMode!: boolean
+
+  @Watch('isDarkMode')
+  onChangeDarkMode(newVal: boolean, oldVal: boolean) {
+    this.$vuetify.theme.dark = newVal
+  }
 }
 </script>
 
@@ -44,11 +51,19 @@ export default class App extends Vue {
 @import './assets/css/reset.css';
 
 #app {
-  &.theme--dark {
-    background-image: url('assets/bg2.png');
+  &.theme--light {
+    background-image: url('assets/bg-light.png');
   }
+  &.theme--dark {
+    background-image: url('assets/bg-dark.png');
+  }
+  
   .loading-bg {
     background-color: var(--v-secondary-darken1);
+  }
+  .content-expand > div {
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

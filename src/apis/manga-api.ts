@@ -84,6 +84,7 @@ export class MangaAPI implements IMangaAPI {
       subName: data.subName,
       author: data.author,
       banner: data.banner,
+      themeColor: {r: 0, g: 0, b: 0, a: 0},
       backBarImgSrc: data.backBarImgSrc,
       chapterNumber: data.chapterNumber,
       transChapterNumber: data.transChapterNumber,

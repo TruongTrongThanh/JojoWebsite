@@ -26,20 +26,18 @@
       </transition>
     </div>
     <v-skeleton-loader
-      v-if="imgLoading"
+      :loading="imgLoading"
       :height="expandToggle ? 400 : 100"
       width="722"
       class="loading-bg content-expand"
       type="image"
+      transition="fade-transition"
     >
-    </v-skeleton-loader>
-    <v-fade-transition>
-      <img v-show="!imgLoading"
+      <img
         :src="manga.backBarImgSrc"
         class="background"
-        @load="imgLoading = false"
       >
-    </v-fade-transition>
+    </v-skeleton-loader>
   </div>
 </template>
 
@@ -53,6 +51,11 @@ export default class MangaBar extends Vue {
 
   expandToggle: boolean = false
   imgLoading: boolean = true
+
+  async created() {
+    await this.$helper.fetchImage(this.manga.backBarImgSrc)
+    this.imgLoading = false
+  }
 }
 </script>
 
@@ -79,11 +82,6 @@ $outline-color: rgba(197, 197, 197, 0.788);
     &:hover {
       color: white;
     }
-  }
-  
-  .content-expand > div {
-    width: 100%;
-    height: 100%;
   }
 
   .background {

@@ -1,6 +1,11 @@
 <template>
   <v-card class="manga-info">
-    <v-card-title class="title-bg text-uppercase justify-center">
+    <v-card-title
+      :style="{
+        'background-color': `rgba(${themeColor})`
+      }"
+      class="text-uppercase justify-center"
+    >
       Thông tin truyện
     </v-card-title>
     <v-card-text>
@@ -30,6 +35,14 @@
         {{manga.desc}}
       </div>
     </v-card-text>
+    <v-card-actions
+      v-if="manga.chapterList.length > 0"
+      class="justify-end"
+    >
+      <v-btn text>
+        Đọc chương đầu ({{ manga.chapterList[0].index.toString().padStart(3, '0') }})
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -45,6 +58,10 @@ import GenreList from '@/components/GenreList.vue'
 })
 export default class MangaInfo extends Vue {
   @Prop({type: Object, required: true}) readonly manga!: Manga
+
+  get themeColor() {
+    return [Object.values(this.manga.themeColor)].join(',')
+  }
 
   mangaInfoList = [
     {
@@ -63,17 +80,10 @@ export default class MangaInfo extends Vue {
       icon: 'mdi-calendar-month-outline'
     }
   ]
-
-  created() {
-    //
-  }
 }
 </script>
 
 <style lang="scss" scoped>
-.title-bg {
-  background-color: #ba409c;
-}
 .icon-offset {
   position: relative;
   bottom: 1px;
