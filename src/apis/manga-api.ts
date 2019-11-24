@@ -1,5 +1,5 @@
 import { IMangaAPI } from './interface'
-import { MangaOptions, ChapterOptions, PaperOptions, Options } from '@/models/options'
+// import { MangaOptions, ChapterOptions, PaperOptions, Options } from '@/models/options'
 import { Manga, Chapter, Paper, Genre } from '@/models/manga'
 import firebase from 'firebase'
 import { NotFoundError } from '@/models/error'
@@ -14,10 +14,10 @@ type Firestore = firebase.firestore.Firestore
 export class MangaAPI implements IMangaAPI {
   DB: Firestore = FirebaseAPI.getDBInstance()
 
-  async getMangaList(options?: MangaOptions): Promise<Manga[]> {
+  async getMangaList(): Promise<Manga[]> {
     const list: Manga[] = []
-    let query: Query | CollectionReference = this.DB!.collection('mangas')
-    query = this.applyOptions(query, options || MangaOptions.NEWEST)
+    const query: Query | CollectionReference = this.DB!.collection('mangas')
+    // query = this.applyOptions(query, options || MangaOptions.NEWEST)
     const res = await query.get()
     if (res.size === 0) throw new NotFoundError('No manga(s) is available')
     res.forEach(snapshot => {
@@ -30,12 +30,12 @@ export class MangaAPI implements IMangaAPI {
     const res = await ref.get()
     return this.convertToManga(res)
   }
-  async getChapterList(mangaID?: string, options?: ChapterOptions): Promise<Chapter[]> {
+  async getChapterList(mangaID?: string): Promise<Chapter[]> {
     const list: Chapter[] = []
     let query: Query | CollectionReference = this.DB!.collection('chapters')
     const mangaRef = this.DB!.collection('mangas').doc(mangaID)
     query = query.where('mangaRef', '==', mangaRef)
-    query = this.applyOptions(query, options || ChapterOptions.ALPHABET_ASC)
+    // query = this.applyOptions(query, options || ChapterOptions.ALPHABET_ASC)
     const res = await query.get()
     res.forEach(snapshot => {
       list.push(this.convertToChapter(snapshot))
@@ -47,12 +47,14 @@ export class MangaAPI implements IMangaAPI {
     const res = await ref.get()
     return this.convertToChapter(res)
   }
-  async getPaperList(chapterID?: string, options?: PaperOptions): Promise<Paper[]> {
+  async getPaperList(chapterID?: string): Promise<Paper[]> {
     const list: Paper[] = []
     let query: Query | CollectionReference = this.DB!.collection('papers')
     const chapterRef = this.DB!.collection('chapters').doc(chapterID)
+
     query = query.where('chapterRef', '==', chapterRef)
-    query = this.applyOptions(query, options || PaperOptions.INDEX_ASC)
+    // query = this.applyOptions(query, options || PaperOptions.INDEX_ASC)
+
     const res = await query.get()
     if (res.size === 0) throw new NotFoundError('No page(s) is available')
     res.forEach(snapshot => {
@@ -106,7 +108,7 @@ export class MangaAPI implements IMangaAPI {
       index: data.index,
       name: data.name,
       cardImgSrc: data.cardImgSrc,
-      mangaRef: data.mangaRef,
+      mangaRef: data.mangaRef.id,
       paperListSize: data.paperListSize,
       paperList: [],
       createdAt: data.createdAt.toDate(),
@@ -121,7 +123,7 @@ export class MangaAPI implements IMangaAPI {
       id: doc.id,
       index: data.index,
       url: data.url,
-      chapterRef: data.chapterRef,
+      chapterRef: data.chapterRef.id,
       createdAt: data.createdAt.toDate(),
       modifiedAt: data.modifiedAt.toDate()
     }
@@ -136,11 +138,10 @@ export class MangaAPI implements IMangaAPI {
     }
   }
 
-  private applyOptions(query: Query | CollectionReference, options: Options): Query {
-    let resQy = query
-    resQy = resQy.orderBy(options.orderBy.field, options.orderBy.direction)
-    if (options.startAtValue) resQy = resQy.startAt(options.startAtValue)
-    if (options.limit) resQy = resQy.limit(options.limit)
-    return resQy
-  }
+  // private applyOptions(query: Query | CollectionReference, options: Options): Query {
+  //   let resQy = query
+  //   resQy = resQy.orderBy(options.orderBy.field, options.orderBy.direction)
+  //   if (options.limit) resQy = resQy.limit(options.limit)
+  //   return resQy
+  // }
 }

@@ -36,7 +36,6 @@
     "tests/**/*.tsx"
   ],
   "exclude": [
-    "node_modules",
-    "*.old.ts"
+    "node_modules"
   ]
 }

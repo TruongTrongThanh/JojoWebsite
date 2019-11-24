@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import chapterReading from './modules/chapter-reading'
+import ChapterNavigation from './modules/chapter-navigation'
 import Settings from './modules/settings'
 
 Vue.use(Vuex)
@@ -8,7 +8,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {},
   modules: {
-    chapterReading,
+    ChapterNavigation,
     Settings
   }
 })

@@ -15,6 +15,7 @@
           three-line
           v-for="chapter in manga.chapterList"
           :key="chapter.id"
+          :to="{ name: 'chapter-view', params: {id: chapter.id} }"
         >
           <v-list-item-avatar tile>
             <v-img :src="chapter.cardImgSrc || defaultChapterIcon"></v-img>

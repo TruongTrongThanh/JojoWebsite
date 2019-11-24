@@ -26,6 +26,7 @@ export interface Chapter {
   paperList: Paper[]
   createdAt: Date
   modifiedAt: Date
+  manga?: Manga
 }
 export interface Paper {
   id: string
@@ -34,6 +35,8 @@ export interface Paper {
   chapterRef: any
   createdAt: Date
   modifiedAt: Date
+  isDoneLoading?: boolean
+  chapter?: Chapter
 }
 export interface Genre {
   name: string

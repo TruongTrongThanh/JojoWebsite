@@ -33,6 +33,11 @@ export default new Router({
       path: '/manga/:mangaID',
       name: 'manga-details',
       component: () => import('./views/manga/Details.vue')
+    },
+    {
+      path: '/chapter/:id',
+      name: 'chapter-view',
+      component: () => import('./views/chapter/View.vue')
     }
   ]
 })

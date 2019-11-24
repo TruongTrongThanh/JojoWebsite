@@ -2,7 +2,12 @@
   <v-app id="app">
     <Drawer v-model="drawerToggle"/>
 
-    <v-app-bar app clipped-left
+    <v-app-bar
+      app 
+      clipped-left
+      :hide-on-scroll="hideAppBarWhenScroll"
+      :scroll-off-screen="hideAppBarWhenScroll"
+      :extension-height="isReaderMode && $vuetify.breakpoint.mdAndDown ? 60 : 0"
       height="75"
     >
       <v-app-bar-nav-icon
@@ -16,10 +21,23 @@
       <v-toolbar-title class="headline font-weight-bold">
         JoJo Group Vietnam
       </v-toolbar-title>
+
+      <v-spacer></v-spacer>
+
+      <ChapterNavigation
+        v-if="isReaderMode && $vuetify.breakpoint.lgAndUp"
+      />
+
+      <template slot="extension">
+        <ChapterNavigation
+          v-if="isReaderMode && $vuetify.breakpoint.mdAndDown"
+          class="mb-4"
+        />
+      </template>
     </v-app-bar>
 
     <v-content>
-      <router-view/>
+      <router-view :key="$route.fullPath"/>
     </v-content>
 
     <vue-progress-bar></vue-progress-bar>
@@ -30,15 +48,23 @@
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import { State } from 'vuex-class'
 import Drawer from '@/components/Drawer.vue'
+import ChapterNavigation from '@/components/ChapterNavigation.vue'
 
 @Component({
   components: {
-    Drawer
+    Drawer,
+    ChapterNavigation
   }
 })
 export default class App extends Vue {
+  @State(state => state.Settings.isDarkMode)
+  isDarkMode!: boolean
+  @State(state => state.Settings.isReaderMode)
+  isReaderMode!: boolean
+  @State(state => state.Settings.hideAppBarWhenScroll)
+  hideAppBarWhenScroll!: boolean
+
   drawerToggle: boolean = false
-  @State(state => state.Settings.isDarkMode) isDarkMode!: boolean
 
   @Watch('isDarkMode')
   onChangeDarkMode(newVal: boolean, oldVal: boolean) {

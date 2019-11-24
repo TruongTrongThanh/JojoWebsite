@@ -31,12 +31,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue, Mixins } from 'vue-property-decorator'
 import { Genre, Manga, Chapter } from '@/models/manga.ts'
-import { ChapterOptions } from '@/models/options.ts'
 import Title from '@/components/MangaTitle.vue'
 import Info from '@/components/MangaInfo.vue'
 import ChapterList from '@/components/MangaChapterList.vue'
+import PageMixins from '@/mixins/page-mixin'
 
 @Component({
   components: {
@@ -45,7 +45,7 @@ import ChapterList from '@/components/MangaChapterList.vue'
     ChapterList
   }
 })
-export default class MangaDetails extends Vue {
+export default class MangaList extends Mixins(PageMixins) {
   manga: Manga | null = null
   bannerLoading: boolean = true
 
