@@ -1,5 +1,5 @@
 <template>
-  <v-app id="app">
+  <v-app>
     <Drawer v-model="drawerToggle"/>
 
     <v-app-bar
@@ -58,17 +58,32 @@ import ChapterNavigation from '@/components/ChapterNavigation.vue'
 })
 export default class App extends Vue {
   @State(state => state.Settings.isDarkMode)
-  isDarkMode!: boolean
+  readonly isDarkMode!: boolean
   @State(state => state.Settings.isReaderMode)
-  isReaderMode!: boolean
+  readonly isReaderMode!: boolean
   @State(state => state.Settings.hideAppBarWhenScroll)
-  hideAppBarWhenScroll!: boolean
+  readonly hideAppBarWhenScroll!: boolean
+  @State(state => state.Settings.isOnePageMode)
+  readonly isOnePageMode!: boolean
 
   drawerToggle: boolean = false
 
   @Watch('isDarkMode')
-  onChangeDarkMode(newVal: boolean, oldVal: boolean) {
+  onChangedDarkMode(newVal: boolean, oldVal: boolean) {
     this.$vuetify.theme.dark = newVal
+  }
+
+  @Watch('isOnePageMode')
+  onChangedOnePageMode(newVal: boolean, oldVal: boolean) {
+    if (newVal) {
+      this.$router.push({
+        query: { page: this.$route.query.page || '1' }
+      })
+    } else {
+      this.$router.push({
+        query: {}
+      })
+    }
   }
 }
 </script>

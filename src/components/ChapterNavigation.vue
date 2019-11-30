@@ -38,13 +38,15 @@ export default class ChapterNavigation extends Vue {
   readonly currentChapter!: Chapter
 
   @State(state => state.ChapterNavigation.mangaSelector)
-  mangaSelector: any
+  readonly mangaSelector: any
   @State(state => state.ChapterNavigation.mangaSelectList)
-  mangaSelectList: any
+  readonly mangaSelectList: any
   @State(state => state.ChapterNavigation.chapterSelector)
-  chapterSelector: any
+  readonly chapterSelector: any
   @State(state => state.ChapterNavigation.chapterSelectList)
-  chapterSelectList: any
+  readonly chapterSelectList: any
+  @State(state => state.Settings.isOnePageMode)
+  readonly isOnePageMode!: boolean
 
   get mangaSelectorModel() {
     return this.mangaSelector
@@ -63,7 +65,8 @@ export default class ChapterNavigation extends Vue {
     this.$store.commit('setChapterSelector', val)
     this.$router.push({
       name: 'chapter-view',
-      params: { id: val }
+      params: { id: val },
+      query: this.isOnePageMode ? { page: '1' } : undefined
     })
   }
 
@@ -79,19 +82,21 @@ export default class ChapterNavigation extends Vue {
 
   @Watch('currentChapter')
   async onChangedChapter(newVal: Chapter, oldVal: Chapter) {
-    const [manga, chapterList] = await Promise.all([
-      this.$mangaAPI.getMangaByID(newVal.mangaRef),
-      this.$mangaAPI.getChapterList(newVal.mangaRef)
-    ])
-
-    this.$store.commit('setChapterSelectList', chapterList.map(chap => {
-      return {
-        text: chap.name,
-        value: chap.id
-      }
-    }))
-    this.$store.commit('setMangaSelector', manga.id)
     this.$store.commit('setChapterSelector', this.currentChapter.id)
+
+    if (!oldVal || (oldVal.mangaRef !== newVal.mangaRef)) {
+      const [manga, chapterList] = await Promise.all([
+        this.$mangaAPI.getMangaByID(newVal.mangaRef),
+        this.$mangaAPI.getChapterList(newVal.mangaRef)
+      ])
+      this.$store.commit('setChapterSelectList', chapterList.map(chap => {
+        return {
+          text: `${chap.index.toString().padStart(3, '0')} - ${chap.name}`,
+          value: chap.id
+        }
+      }))
+      this.$store.commit('setMangaSelector', manga.id)
+    }
   }
 }
 </script>

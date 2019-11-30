@@ -4,7 +4,9 @@ import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
 export default class Settings extends VuexModule {
   isDarkMode: boolean = true
   isReaderMode: boolean = false
+  autoNext: boolean = true
   hideAppBarWhenScroll: boolean = false
+  isOnePageMode: boolean = false
 
   @Mutation
   setDarkMode(val: boolean) {
@@ -17,5 +19,13 @@ export default class Settings extends VuexModule {
   @Mutation
   setHideAppBarWhenScroll(val: boolean) {
     this.hideAppBarWhenScroll = val
+  }
+  @Mutation
+  setAutoNext(val: boolean) {
+    this.autoNext = val
+  }
+  @Mutation
+  setOnePageMode(val: boolean) {
+    this.isOnePageMode = val
   }
 }

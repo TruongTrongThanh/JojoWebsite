@@ -35,6 +35,7 @@ export class MangaAPI implements IMangaAPI {
     let query: Query | CollectionReference = this.DB!.collection('chapters')
     const mangaRef = this.DB!.collection('mangas').doc(mangaID)
     query = query.where('mangaRef', '==', mangaRef)
+    query = query.orderBy('index', 'desc')
     // query = this.applyOptions(query, options || ChapterOptions.ALPHABET_ASC)
     const res = await query.get()
     res.forEach(snapshot => {
